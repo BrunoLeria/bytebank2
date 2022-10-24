@@ -18,8 +18,7 @@ class _ContactsListState extends State<ContactsList> {
         ),
       ),
       body: FutureBuilder(
-        future: Future.delayed(const Duration(seconds: 1))
-            .then((value) => findAll()),
+        future: findAll(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
