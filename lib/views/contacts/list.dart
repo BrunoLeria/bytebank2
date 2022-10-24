@@ -3,7 +3,12 @@ import 'package:bytebank2/models/contact.dart';
 import 'package:bytebank2/views/contacts/form.dart';
 import 'package:flutter/material.dart';
 
-class ContactsList extends StatelessWidget {
+class ContactsList extends StatefulWidget {
+  @override
+  State<ContactsList> createState() => _ContactsListState();
+}
+
+class _ContactsListState extends State<ContactsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,8 +18,21 @@ class ContactsList extends StatelessWidget {
         ),
       ),
       body: FutureBuilder(
-        future: findAll(),
+        future: Future.delayed(const Duration(seconds: 1))
+            .then((value) => findAll()),
         builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  CircularProgressIndicator(),
+                  Text('Loading'),
+                ],
+              ),
+            );
+          }
           final List<Contact> contacts =
               snapshot.data != null ? snapshot.data as List<Contact> : [];
 
@@ -34,8 +52,8 @@ class ContactsList extends StatelessWidget {
                 builder: (context) => ContactForm(),
               ),
             )
-            .then((newContact) => debugPrint(newContact.toString())),
-        child: Icon(Icons.add),
+            .then((value) => setState(() {})),
+        child: const Icon(Icons.add),
       ),
     );
   }
