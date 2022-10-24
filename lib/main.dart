@@ -30,7 +30,7 @@ class ByteBankApp extends StatelessWidget {
           ),
         ),
       ),
-      home: Dashboard(),
+      home: const Dashboard(),
     );
   }
 }

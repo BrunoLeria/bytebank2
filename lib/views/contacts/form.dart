@@ -1,4 +1,4 @@
-import 'package:bytebank2/databases/app.dart';
+import 'package:bytebank2/databases/dao/contact.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:flutter/material.dart';
 
@@ -15,10 +15,17 @@ class _ContactFormState extends State<ContactForm> {
   final TextEditingController _accountNumberController =
       TextEditingController();
 
+  final ContactDao _contactDao = ContactDao();
+  final String _appBarTitle = "New Contact";
+  final String _nameLabel = "Full name";
+  final String _accountNumberLabel = "Account number";
+  final String _elevatedButtonLabel = "Create";
+  final double _fontSizeForLabels = 24.0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("New Contact")),
+      appBar: AppBar(title: Text(_appBarTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -28,17 +35,17 @@ class _ContactFormState extends State<ContactForm> {
               child: TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: "Full name",
+                  labelText: _nameLabel,
                 ),
-                style: TextStyle(fontSize: 24.0),
+                style: TextStyle(fontSize: _fontSizeForLabels),
               ),
             ),
             TextField(
               controller: _accountNumberController,
               decoration: InputDecoration(
-                labelText: "Account number",
+                labelText: _accountNumberLabel,
               ),
-              style: TextStyle(fontSize: 24.0),
+              style: TextStyle(fontSize: _fontSizeForLabels),
               keyboardType: TextInputType.number,
             ),
             Padding(
@@ -47,14 +54,16 @@ class _ContactFormState extends State<ContactForm> {
                 width: double.maxFinite,
                 child: ElevatedButton(
                   onPressed: () {
-                    final int? id = 0;
-                    final String? name = _nameController.text;
+                    const int id = 0;
+                    final String name = _nameController.text;
                     final int? accountNumber =
                         int.tryParse(_accountNumberController.text);
                     final Contact newContact = Contact(id, name, accountNumber);
-                    save(newContact).then((id) => Navigator.pop(context));
+                    _contactDao
+                        .save(newContact)
+                        .then((id) => Navigator.pop(context));
                   },
-                  child: Text('Create'),
+                  child: Text(_elevatedButtonLabel),
                 ),
               ),
             )

@@ -2,9 +2,11 @@ import 'package:bytebank2/views/contacts/list.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatelessWidget {
+  const Dashboard({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    String title = 'Dashboard';
+    String title = "Dashboard";
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -15,15 +17,15 @@ class Dashboard extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset('images/bytebank_logo.png'),
+            child: Image.asset("images/bytebank_logo.png"),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Material(
               color: Theme.of(context).primaryColor,
               child: InkWell(
-                onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ContactsList())),
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const ContactsList())),
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
                   height: 100,
