@@ -4,7 +4,7 @@ import 'package:http/http.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 
 import '../models/contact.dart';
-import '../views/transactions/feed.dart';
+import '../views/transactions/list.dart';
 
 class LoggingInterceptor implements InterceptorContract {
   @override

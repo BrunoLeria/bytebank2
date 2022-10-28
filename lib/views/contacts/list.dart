@@ -3,6 +3,8 @@ import 'package:bytebank2/models/contact.dart';
 import 'package:bytebank2/views/contacts/form.dart';
 import 'package:flutter/material.dart';
 
+import '../../components/loading.dart';
+
 class ContactsList extends StatefulWidget {
   const ContactsList({Key? key}) : super(key: key);
 
@@ -25,16 +27,7 @@ class _ContactsListState extends State<ContactsList> {
         future: _contactDao.findAll(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: const <Widget>[
-                  CircularProgressIndicator(),
-                  Text('Loading'),
-                ],
-              ),
-            );
+            return const Loading();
           }
           final List<Contact> contacts =
               snapshot.data != null ? snapshot.data as List<Contact> : [];
