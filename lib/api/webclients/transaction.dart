@@ -11,11 +11,9 @@ class TransactionWebClient {
         .get(Uri.parse(baseUrl))
         .timeout(const Duration(seconds: 15));
     final List<dynamic> decodedJson = jsonDecode(response.body);
-    final List<Transaction> transactions = [];
-    for (Map<String, dynamic> transactionJson in decodedJson) {
-      transactions.add(Transaction.fromJson(transactionJson));
-    }
-    return transactions;
+    return decodedJson
+        .map((dynamic json) => Transaction.fromJson(json))
+        .toList();
   }
 
   Future<Transaction> save(Transaction transaction) async {
@@ -25,11 +23,6 @@ class TransactionWebClient {
         headers: {'Content-type': 'application/json', 'password': '1000'},
         body: transactionJson);
 
-    return _toTransaction(response);
-  }
-
-  Transaction _toTransaction(Response response) {
-    Map<String, dynamic> json = jsonDecode(response.body);
-    return Transaction.fromJson(json);
+    return Transaction.fromJson(jsonDecode(response.body));
   }
 }
