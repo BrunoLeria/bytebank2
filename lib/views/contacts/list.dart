@@ -3,6 +3,7 @@ import 'package:bytebank2/models/contact.dart';
 import 'package:bytebank2/views/contacts/form.dart';
 import 'package:flutter/material.dart';
 
+import '../../components/centered_message.dart';
 import '../../components/loading.dart';
 
 class ContactsList extends StatefulWidget {
@@ -31,7 +32,12 @@ class _ContactsListState extends State<ContactsList> {
           }
           final List<Contact> contacts =
               snapshot.data != null ? snapshot.data as List<Contact> : [];
-
+          if (contacts.isEmpty) {
+            return const CenteredMessage(
+              "Lista de contatos está vazia.",
+              Icons.warning,
+            );
+          }
           return ListView.builder(
             itemBuilder: (context, index) {
               final Contact contact = contacts[index];

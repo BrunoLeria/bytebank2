@@ -2,6 +2,7 @@ import 'package:bytebank2/api/webclient.dart';
 import 'package:bytebank2/components/loading.dart';
 import 'package:flutter/material.dart';
 
+import '../../components/centered_message.dart';
 import '../../models/contact.dart';
 
 class TransactionsList extends StatefulWidget {
@@ -28,6 +29,13 @@ class _TransactionsListState extends State<TransactionsList> {
               final List<Transaction> transactions = snapshot.data != null
                   ? snapshot.data as List<Transaction>
                   : [];
+
+              if (transactions.isEmpty) {
+                return const CenteredMessage(
+                  "Lista de transações está vazia.",
+                  Icons.warning,
+                );
+              }
 
               return ListView.builder(
                 itemBuilder: (context, index) {
