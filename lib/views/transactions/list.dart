@@ -1,7 +1,7 @@
-import 'package:bytebank2/api/webclient.dart';
 import 'package:bytebank2/components/loading.dart';
 import 'package:flutter/material.dart';
 
+import '../../api/webclients/transaction.dart';
 import '../../components/centered_message.dart';
 import '../../models/contact.dart';
 
@@ -13,6 +13,8 @@ class TransactionsList extends StatefulWidget {
 }
 
 class _TransactionsListState extends State<TransactionsList> {
+  final TransactionWebClient _webClient = TransactionWebClient();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +22,7 @@ class _TransactionsListState extends State<TransactionsList> {
           title: const Text('Transactions'),
         ),
         body: FutureBuilder<List<Transaction>>(
-            future: findAll(),
+            future: _webClient.findAll(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Loading();
@@ -57,7 +59,7 @@ class _TransactionsItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Icon(Icons.monetization_on),
+        leading: const Icon(Icons.monetization_on),
         title: Text(
           transaction.value.toString(),
           style: const TextStyle(
