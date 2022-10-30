@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:bytebank2/components/transaction_auth_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../../api/webclients/transaction.dart';
+import '../../components/response_dialog.dart';
 import '../../models/contact.dart';
 import 'list.dart';
 
@@ -63,19 +66,7 @@ class _TransactionFormState extends State<TransactionForm> {
                   child: ElevatedButton(
                     child: const Text('Transfer'),
                     onPressed: () {
-                      final double? value =
-                          double.tryParse(_valueController.text);
-                      final transactionCreated =
-                          Transaction(value!, widget.contact);
-                      showDialog(
-                        context: context,
-                        builder: (contextDialog) {
-                          return TransactionAuthDialog(
-                            onConfirm: (password) =>
-                                _save(transactionCreated, password, context),
-                          );
-                        },
-                      );
+                      _initiateTransaction(context);
                     },
                   ),
                 ),
@@ -87,13 +78,50 @@ class _TransactionFormState extends State<TransactionForm> {
     );
   }
 
-  void _save(
-      Transaction transactionCreated, String password, BuildContext context) {
-    _webClient.save(transactionCreated, password).then((transaction) {
+  void _initiateTransaction(BuildContext context) {
+    final double? value = double.tryParse(_valueController.text);
+    if (value == null) {
+      showDialog(
+          context: context,
+          builder: (contextDialog) {
+            return const FailureDialog(
+                "Informe um valor válido para a transação.");
+          });
+    }
+    final transactionCreated = Transaction(value!, widget.contact);
+    showDialog(
+      context: context,
+      builder: (contextDialog) {
+        return TransactionAuthDialog(
+          onConfirm: (password) => _save(transactionCreated, password, context),
+        );
+      },
+    );
+  }
+
+  void _save(Transaction transactionCreated, String password,
+      BuildContext context) async {
+    await _webClient.save(transactionCreated, password).then((transaction) {
       Navigator.pop(context);
+      showDialog(
+          context: context,
+          builder: (contextDialog) {
+            return const SuccessDialog("Transação feita com sucesso!");
+          });
     }).catchError((e) {
-      print(e);
-    });
+      showDialog(
+          context: context,
+          builder: (contextDialog) {
+            return FailureDialog(e.message);
+          });
+    }, test: (e) => e is HttpException).catchError((e) {
+      showDialog(
+          context: context,
+          builder: (contextDialog) {
+            return const FailureDialog(
+                "Houve um problema com a coneão. Tente novamente mais tarde.");
+          });
+    }, test: (e) => e is TimeoutException);
     ;
   }
 }
