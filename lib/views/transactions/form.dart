@@ -81,12 +81,10 @@ class _TransactionFormState extends State<TransactionForm> {
   void _initiateTransaction(BuildContext context) {
     final double? value = double.tryParse(_valueController.text);
     if (value == null) {
-      showDialog(
-          context: context,
-          builder: (contextDialog) {
-            return const FailureDialog(
-                "Informe um valor válido para a transação.");
-          });
+      _showFailureMessage(
+        context,
+        message: "Informe um valor válido para a transação.",
+      );
     }
     final transactionCreated = Transaction(value!, widget.contact);
     showDialog(
@@ -102,26 +100,38 @@ class _TransactionFormState extends State<TransactionForm> {
   void _save(Transaction transactionCreated, String password,
       BuildContext context) async {
     await _webClient.save(transactionCreated, password).then((transaction) {
-      Navigator.pop(context);
-      showDialog(
-          context: context,
-          builder: (contextDialog) {
-            return const SuccessDialog("Transação feita com sucesso!");
-          });
+      _showSuccessfulMessage(context);
     }).catchError((e) {
-      showDialog(
-          context: context,
-          builder: (contextDialog) {
-            return FailureDialog(e.message);
-          });
+      _showFailureMessage(
+        context,
+        message: e.message,
+      );
     }, test: (e) => e is HttpException).catchError((e) {
-      showDialog(
-          context: context,
-          builder: (contextDialog) {
-            return const FailureDialog(
-                "Houve um problema com a coneão. Tente novamente mais tarde.");
-          });
-    }, test: (e) => e is TimeoutException);
-    ;
+      _showFailureMessage(
+        context,
+        message: "Houve um problema com a conexão. Tente novamente mais tarde.",
+      );
+    }, test: (e) => e is TimeoutException).catchError((e) {
+      _showFailureMessage(context);
+    });
+  }
+
+  void _showFailureMessage(BuildContext context,
+      {String message =
+          'Erro desconhecido, por favor entre contato com o nosso'}) {
+    showDialog(
+        context: context,
+        builder: (contextDialog) {
+          return FailureDialog(message);
+        });
+  }
+
+  void _showSuccessfulMessage(BuildContext context) {
+    Navigator.pop(context);
+    showDialog(
+        context: context,
+        builder: (contextDialog) {
+          return const SuccessDialog("Transação feita com sucesso!");
+        });
   }
 }
