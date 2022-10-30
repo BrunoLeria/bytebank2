@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'components/transaction_auth_dialog.dart';
 import 'views/dashboard.dart';
 
 void main() {
