@@ -7,20 +7,21 @@ class ResponseDialog extends StatelessWidget {
   final IconData? icon;
   final Color colorIcon;
 
-  ResponseDialog({
+  const ResponseDialog({
+    Key? key,
     this.title = "",
     this.message = "",
     this.icon,
     this.buttonText = 'Ok',
     this.colorIcon = Colors.black,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Visibility(
-        child: Text(title),
         visible: title.isNotEmpty,
+        child: Text(title),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -70,9 +71,10 @@ class SuccessDialog extends StatelessWidget {
 
   const SuccessDialog(
     this.message, {
+    Key? key,
     this.title = 'Success',
     this.icon = Icons.done,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -92,9 +94,10 @@ class FailureDialog extends StatelessWidget {
 
   const FailureDialog(
     this.message, {
+    Key? key,
     this.title = 'Failure',
     this.icon = Icons.warning,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

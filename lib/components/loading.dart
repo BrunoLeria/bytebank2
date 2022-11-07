@@ -12,9 +12,15 @@ class Loading extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: const <Widget>[
-          CircularProgressIndicator(),
-          Text('Loading'),
+        children: <Widget>[
+          const CircularProgressIndicator(),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              message,
+              style: const TextStyle(fontSize: 16.0),
+            ),
+          ),
         ],
       ),
     );

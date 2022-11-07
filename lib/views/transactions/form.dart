@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:bytebank2/components/loading.dart';
 import 'package:bytebank2/components/transaction_auth_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../api/webclients/transaction.dart';
 import '../../components/response_dialog.dart';
@@ -11,7 +13,7 @@ import 'list.dart';
 class TransactionForm extends StatefulWidget {
   final Contact contact;
 
-  TransactionForm(this.contact);
+  const TransactionForm(this.contact, {Key? key}) : super(key: key);
 
   @override
   _TransactionFormState createState() => _TransactionFormState();
@@ -20,6 +22,8 @@ class TransactionForm extends StatefulWidget {
 class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _valueController = TextEditingController();
   final TransactionWebClient _webClient = TransactionWebClient();
+  final String transactionID = const Uuid().v4();
+  bool _sending = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +37,15 @@ class _TransactionFormState extends State<TransactionForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Visibility(
+                visible: _sending,
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Loading(
+                    message: "Sending...",
+                  ),
+                ),
+              ),
               Text(
                 widget.contact.name!,
                 style: const TextStyle(
@@ -86,7 +99,8 @@ class _TransactionFormState extends State<TransactionForm> {
         message: "Informe um valor válido para a transação.",
       );
     }
-    final transactionCreated = Transaction(value!, widget.contact);
+    final transactionCreated =
+        Transaction(transactionID, value!, widget.contact);
     showDialog(
       context: context,
       builder: (contextDialog) {
@@ -99,6 +113,9 @@ class _TransactionFormState extends State<TransactionForm> {
 
   void _save(Transaction transactionCreated, String password,
       BuildContext context) async {
+    setState(() {
+      _sending = true;
+    });
     await _webClient.save(transactionCreated, password).then((transaction) {
       _showSuccessfulMessage(context);
     }).catchError((e) {
@@ -113,7 +130,9 @@ class _TransactionFormState extends State<TransactionForm> {
       );
     }, test: (e) => e is TimeoutException).catchError((e) {
       _showFailureMessage(context);
-    });
+    }).whenComplete(() => setState(() {
+          _sending = false;
+        }));
   }
 
   void _showFailureMessage(BuildContext context,
