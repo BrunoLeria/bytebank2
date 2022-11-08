@@ -9,6 +9,7 @@ void main() async {
   await Firebase.initializeApp();
 
   // Pass all uncaught errors from the framework to Crashlytics.
+  FirebaseCrashlytics.instance.setUserIdentifier("qhs4mgkg9xt4tdi");
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   runApp(const ByteBankApp());
 }
