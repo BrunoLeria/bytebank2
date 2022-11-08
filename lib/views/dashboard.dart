@@ -1,4 +1,5 @@
 import 'package:bytebank2/views/contacts/list.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 
 import 'transactions/list.dart';

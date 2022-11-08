@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bytebank2/components/loading.dart';
 import 'package:bytebank2/components/transaction_auth_dialog.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -119,16 +120,33 @@ class _TransactionFormState extends State<TransactionForm> {
     await _webClient.save(transactionCreated, password).then((transaction) {
       _showSuccessfulMessage(context);
     }).catchError((e) {
+      FirebaseCrashlytics.instance.setCustomKey("Exception", e.toString());
+      FirebaseCrashlytics.instance.setCustomKey("http_code", e.StatusCode);
+      FirebaseCrashlytics.instance
+          .setCustomKey("http_body", transactionCreated.toString());
+      FirebaseCrashlytics.instance.recordError(e.message, null);
       _showFailureMessage(
         context,
         message: e.message,
       );
     }, test: (e) => e is HttpException).catchError((e) {
+      FirebaseCrashlytics.instance.setCustomKey("Exception", e.toString());
+      FirebaseCrashlytics.instance.setCustomKey("http_code", e.StatusCode);
+      FirebaseCrashlytics.instance
+          .setCustomKey("http_body", transactionCreated.toString());
+      FirebaseCrashlytics.instance.recordError(
+          "Houve um problema com a conexão. Tente novamente mais tarde.", null);
       _showFailureMessage(
         context,
         message: "Houve um problema com a conexão. Tente novamente mais tarde.",
       );
     }, test: (e) => e is TimeoutException).catchError((e) {
+      FirebaseCrashlytics.instance.setCustomKey("Exception", e.toString());
+      FirebaseCrashlytics.instance.setCustomKey("http_code", e.StatusCode);
+      FirebaseCrashlytics.instance
+          .setCustomKey("http_body", transactionCreated.toString());
+      FirebaseCrashlytics.instance.recordError(
+          'Erro desconhecido, por favor entre contato com o nosso', null);
       _showFailureMessage(context);
     }).whenComplete(() => setState(() {
           _sending = false;
