@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -18,7 +20,9 @@ void main() async {
     FirebaseCrashlytics.instance.setUserIdentifier("qhs4mgkg9xt4tdi");
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   }
-  runApp(const ByteBankApp());
+  runZonedGuarded<Future<void>>(() async {
+    runApp(const ByteBankApp());
+  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
 }
 
 class ByteBankApp extends StatelessWidget {
@@ -41,7 +45,7 @@ class ByteBankApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: Colors.blueAccent[700],
+            backgroundColor: Colors.blueAccent[700],
           ),
         ),
       ),

@@ -39,6 +39,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core:
   firebase_crashlytics:
+  giffy_dialog:
+  firebase_auth: ^4.1.2
 
 dev_dependencies:
   flutter_test:

@@ -25,10 +25,12 @@ class _TransactionFormState extends State<TransactionForm> {
   final TransactionWebClient _webClient = TransactionWebClient();
   final String transactionID = const Uuid().v4();
   bool _sending = false;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('New transaction'),
       ),
@@ -152,19 +154,21 @@ class _TransactionFormState extends State<TransactionForm> {
   void _showFailureMessage(BuildContext context,
       {String message =
           'Erro desconhecido, por favor entre contato com o nosso'}) {
-    showDialog(
-        context: context,
-        builder: (contextDialog) {
-          return FailureDialog(message);
-        });
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red[900],
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void _showSuccessfulMessage(BuildContext context) {
     Navigator.pop(context);
-    showDialog(
-        context: context,
-        builder: (contextDialog) {
-          return const SuccessDialog("Transação feita com sucesso!");
-        });
+    final snackBar = SnackBar(
+      content: const Text('Transação feita com sucesso!'),
+      backgroundColor: Colors.green[900],
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
