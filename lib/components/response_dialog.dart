@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:giffy_dialog/giffy_dialog.dart';
 
 class ResponseDialog extends StatelessWidget {
   final String title;
@@ -107,43 +106,6 @@ class FailureDialog extends StatelessWidget {
       message: message,
       icon: icon,
       colorIcon: Colors.red,
-    );
-  }
-}
-
-class GifDialog extends StatelessWidget {
-  final String title;
-  final String message;
-  final String gifPath;
-  final String buttonText;
-  final IconData? icon;
-  final Color colorIcon;
-
-  const GifDialog({
-    Key? key,
-    this.title = "",
-    this.message = "",
-    this.icon,
-    this.buttonText = 'Ok',
-    this.colorIcon = Colors.black,
-    required this.gifPath,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return NetworkGiffyDialog(
-      image: Image.network(gifPath),
-      title: Text(title,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600)),
-      description: Text(
-        message,
-        textAlign: TextAlign.center,
-      ),
-      entryAnimation: EntryAnimation.TOP,
-      onOkButtonPressed: () {},
-      buttonOkColor: Colors.green,
-      buttonCancelColor: Colors.red,
     );
   }
 }
