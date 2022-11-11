@@ -6,16 +6,19 @@ class ContactDao {
   static const String tableSql = 'CREATE TABLE $_tableName('
       '$_id INTEGER PRIMARY KEY, '
       '$_name TEXT, '
-      '$_accountNumber INTEGER)';
+      '$_accountNumber INTEGER, '
+      '$_userId INTEGER,)';
   static const String _tableName = 'contacts';
   static const String _id = 'id';
   static const String _name = 'name';
   static const String _accountNumber = 'account_number';
+  static const String _userId = 'userId';
 
   Map<String, dynamic> _toMap(Contact contact) {
     final Map<String, dynamic> contactMap = {};
     contactMap[_name] = contact.name;
     contactMap[_accountNumber] = contact.accountNumber;
+    contactMap[_userId] = contact.userId;
     return contactMap;
   }
 
@@ -23,7 +26,7 @@ class ContactDao {
     final List<Contact> contacts = [];
     for (Map<String, dynamic> row in results) {
       final Contact contact =
-          Contact(row[_id], row[_name], row[_accountNumber]);
+          Contact(row[_id], row[_name], row[_accountNumber], row[_userId]);
       contacts.add(contact);
     }
     return contacts;
@@ -40,6 +43,13 @@ class ContactDao {
     return _toList(results);
   }
 
+  Future<List<Contact>> findAllByUser(userId) async {
+    final Database db = await getDatabase();
+    final List<Map<String, dynamic>> results =
+        await db.query('contacts', where: '$_userId = ?', whereArgs: [userId]);
+    return _toList(results);
+  }
+
   Future<int> update(Contact contact) async {
     final db = await getDatabase();
     return await db.update(
@@ -50,7 +60,7 @@ class ContactDao {
     );
   }
 
-  Future<void> deleteDog(int id) async {
+  Future<void> delete(int id) async {
     final db = await getDatabase();
     await db.delete(
       _tableName,

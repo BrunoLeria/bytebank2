@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bytebank2/views/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -49,7 +50,7 @@ class ByteBankApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const Dashboard(),
+      home: const Login(),
     );
   }
 }
