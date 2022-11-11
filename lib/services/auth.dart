@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 class AuthService extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   Rx<User?>? _firebaseUser;
-  var userIsLogged = false;
+  RxBool userIsLogged = false.obs;
 
   @override
   void onInit() {
@@ -14,7 +14,7 @@ class AuthService extends GetxController {
     _firebaseUser!.bindStream(_auth.authStateChanges());
 
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      userIsLogged = user != null;
+      userIsLogged.value = user != null;
     });
   }
 

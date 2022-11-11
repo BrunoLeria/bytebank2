@@ -84,7 +84,7 @@ class _ContactItem extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          contact.accountNumber.toString(),
+          contact.email!,
           style: const TextStyle(
             fontSize: 16.0,
           ),

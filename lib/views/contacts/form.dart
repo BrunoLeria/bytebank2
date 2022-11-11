@@ -12,15 +12,14 @@ class ContactForm extends StatefulWidget {
 class _ContactFormState extends State<ContactForm> {
   final TextEditingController _nameController = TextEditingController();
 
-  final TextEditingController _accountNumberController =
-      TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   final TextEditingController _passwordController = TextEditingController();
 
   final ContactDao _contactDao = ContactDao();
   final String _appBarTitle = "New user";
   final String _nameLabel = "Full name";
-  final String _accountNumberLabel = "Account number";
+  final String _emailLabel = "Email";
   final String _passwordLabel = "Password";
   final String _elevatedButtonLabel = "Create";
   final double _fontSizeForLabels = 24.0;
@@ -45,10 +44,10 @@ class _ContactFormState extends State<ContactForm> {
               ),
             ),
             TextField(
-              controller: _accountNumberController,
+              controller: _emailController,
               decoration: InputDecoration(
-                labelText: _accountNumberLabel,
-                prefixIcon: const Icon(Icons.account_balance),
+                labelText: _emailLabel,
+                prefixIcon: const Icon(Icons.email),
               ),
               style: TextStyle(fontSize: _fontSizeForLabels),
               keyboardType: TextInputType.number,
@@ -72,11 +71,11 @@ class _ContactFormState extends State<ContactForm> {
                   onPressed: () {
                     const int id = 0;
                     final String name = _nameController.text;
-                    final int? accountNumber =
-                        int.tryParse(_accountNumberController.text);
-                    final Contact newContact = Contact(id, name, accountNumber);
+                    final String email = _emailController.text;
+                    final String password = _passwordController.text;
+                    final Contact newContact = Contact(id, name, email);
                     _contactDao
-                        .save(newContact)
+                        .save(newContact, password)
                         .then((id) => Navigator.pop(context));
                   },
                   child: Text(_elevatedButtonLabel),

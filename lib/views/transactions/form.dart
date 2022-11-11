@@ -58,7 +58,7 @@ class _TransactionFormState extends State<TransactionForm> {
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Text(
-                  widget.contact.accountNumber.toString(),
+                  widget.contact.email!,
                   style: const TextStyle(
                     fontSize: 32.0,
                     fontWeight: FontWeight.bold,

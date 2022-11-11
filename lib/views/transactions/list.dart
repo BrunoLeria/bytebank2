@@ -68,7 +68,7 @@ class _TransactionsItem extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          transaction.contact.accountNumber.toString(),
+          transaction.contact.email!,
           style: const TextStyle(
             fontSize: 16.0,
           ),

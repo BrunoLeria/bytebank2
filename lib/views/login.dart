@@ -13,9 +13,8 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController _passwordController = TextEditingController();
 
-  final TextEditingController _accountNumberController =
-      TextEditingController();
-  final String _accountNumberLabel = "Account number";
+  final TextEditingController _emailController = TextEditingController();
+  final String _emailLabel = "Email";
   final String _passwordLabel = "Password";
   final double _fontSizeForLabels = 24.0;
 
@@ -38,9 +37,10 @@ class _LoginState extends State<Login> {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TextField(
-                controller: _accountNumberController,
+                controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: _accountNumberLabel,
+                  labelText: _emailLabel,
+                  icon: const Icon(Icons.email),
                 ),
                 style: TextStyle(fontSize: _fontSizeForLabels),
                 keyboardType: TextInputType.number,
@@ -51,6 +51,7 @@ class _LoginState extends State<Login> {
               controller: _passwordController,
               decoration: InputDecoration(
                 labelText: _passwordLabel,
+                icon: const Icon(Icons.lock),
               ),
               style: TextStyle(fontSize: _fontSizeForLabels),
             ),
@@ -88,7 +89,6 @@ class _LoginState extends State<Login> {
   }
 
   login() {
-    AuthService.to
-        .signIn(_accountNumberController.text, _passwordController.text);
+    AuthService.to.signIn(_emailController.text, _passwordController.text);
   }
 }
