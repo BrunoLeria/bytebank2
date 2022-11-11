@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:bytebank2/models/balance.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
 import '../../views/transactions/list.dart';
 import '../webclient.dart';
@@ -14,13 +16,19 @@ class TransactionWebClient {
         .toList();
   }
 
-  Future<Transaction> save(Transaction transaction, String password) async {
+  Future<Transaction> save(
+      Transaction transaction, String password, context) async {
+    if (transaction.value >
+        Provider.of<Balance>(context, listen: false).value) {
+      throw CustomException("Saldo insufisiente");
+    }
     final String transactionJson = jsonEncode(transaction.toJson());
 
     final Response response = await client.post(Uri.parse(baseUrl),
         headers: {'Content-type': 'application/json', 'password': password},
         body: transactionJson);
     if (response.statusCode == 200) {
+      Provider.of<Balance>(context, listen: false).subtract(transaction.value);
       return Transaction.fromJson(jsonDecode(response.body));
     }
     throw HttpException(_getMessage(response.statusCode));
@@ -47,4 +55,10 @@ class HttpException implements Exception {
   final String? message;
 
   HttpException(this.message);
+}
+
+class CustomException implements Exception {
+  final String? message;
+
+  CustomException(this.message);
 }

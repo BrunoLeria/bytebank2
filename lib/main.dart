@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:bytebank2/views/login.dart';
+import 'package:bytebank2/models/balance.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'views/dashboard.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 
 void main() async {
@@ -22,7 +23,9 @@ void main() async {
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   }
   runZonedGuarded<Future<void>>(() async {
-    runApp(const ByteBankApp());
+    runApp(MultiProvider(
+        providers: [ChangeNotifierProvider(create: (context) => Balance(0))],
+        child: const ByteBankApp()));
   }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
 }
 

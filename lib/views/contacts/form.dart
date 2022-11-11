@@ -36,6 +36,7 @@ class _ContactFormState extends State<ContactForm> {
                 controller: _nameController,
                 decoration: InputDecoration(
                   labelText: _nameLabel,
+                  prefixIcon: const Icon(Icons.person),
                 ),
                 style: TextStyle(fontSize: _fontSizeForLabels),
               ),
@@ -44,6 +45,7 @@ class _ContactFormState extends State<ContactForm> {
               controller: _accountNumberController,
               decoration: InputDecoration(
                 labelText: _accountNumberLabel,
+                prefixIcon: const Icon(Icons.account_balance),
               ),
               style: TextStyle(fontSize: _fontSizeForLabels),
               keyboardType: TextInputType.number,
@@ -58,7 +60,8 @@ class _ContactFormState extends State<ContactForm> {
                     final String name = _nameController.text;
                     final int? accountNumber =
                         int.tryParse(_accountNumberController.text);
-                    final Contact newContact = Contact(id, name, accountNumber);
+                    final Contact newContact =
+                        Contact(id, name, accountNumber, 0);
                     _contactDao
                         .save(newContact)
                         .then((id) => Navigator.pop(context));
