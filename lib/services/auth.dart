@@ -72,7 +72,7 @@ class AuthService extends GetxController {
             message: 'The account already exists for that email.');
       }
     } catch (e) {
-      failureDialog!.showFailureSnackBar(context, message: e.toString());
+      print(e.toString());
     }
   }
 

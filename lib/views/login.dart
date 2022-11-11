@@ -30,10 +30,15 @@ class _LoginState extends State<Login> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Image.asset('images/bytebank_logo.png'),
-            // ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.adb_sharp,
+                color: Colors.green,
+                size: 96.0,
+                semanticLabel: 'Text to announce in accessibility modes',
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: TextField(

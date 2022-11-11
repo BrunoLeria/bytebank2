@@ -52,16 +52,6 @@ class _ContactsListState extends State<ContactsList> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context)
-            .push(
-              MaterialPageRoute(
-                builder: (context) => const ContactForm(),
-              ),
-            )
-            .then((value) => setState(() {})),
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }

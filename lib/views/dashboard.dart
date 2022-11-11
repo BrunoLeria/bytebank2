@@ -2,16 +2,19 @@ import 'package:bytebank2/components/balance_card.dart';
 import 'package:bytebank2/views/contacts/list.dart';
 import 'package:bytebank2/views/deposits/form.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/balance.dart';
 import '../services/auth.dart';
 import 'login.dart';
 import 'transactions/list.dart';
 
 class Dashboard extends StatelessWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  const Dashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
     String title = "Dashboard";
+    updateBalance(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -85,6 +88,10 @@ class Dashboard extends StatelessWidget {
     AuthService.to.signOut(context);
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => const Login()));
+  }
+
+  void updateBalance(BuildContext context) {
+    Provider.of<Balance>(context, listen: false).getCurrentUserBalance();
   }
 }
 

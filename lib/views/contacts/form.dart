@@ -78,8 +78,9 @@ class _ContactFormState extends State<ContactForm> {
                       final String email = _emailController.text;
                       final String password = _passwordController.text;
                       final int accountNumber = generateRadomAccountNumber();
+                      const double balance = 1000.0;
                       final Contact newContact =
-                          Contact(id, name, email, accountNumber);
+                          Contact(id, name, email, accountNumber, balance);
                       _contactDao
                           .save(newContact, password, context)
                           .then((id) {

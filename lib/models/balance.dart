@@ -1,3 +1,6 @@
+import 'package:bytebank2/database/dao/contact.dart';
+import 'package:bytebank2/models/contact.dart';
+import 'package:bytebank2/services/auth.dart';
 import 'package:flutter/material.dart';
 
 class Balance extends ChangeNotifier {
@@ -5,12 +8,30 @@ class Balance extends ChangeNotifier {
 
   Balance(this.value);
 
-  void add(double valor) {
+  void getCurrentUserBalance() async {
+    String? email = AuthService.to.user?.email ?? '';
+    final double balance = await ContactDao().getBalance(email);
+    value = balance;
+    notifyListeners();
+  }
+
+  void add(double valor) async {
+    String? email = AuthService.to.user?.email ?? '';
+
+    Contact currentUser = await ContactDao().findByEmail(email);
+    print('currentUser: $currentUser');
+    currentUser.balance = currentUser.balance! + valor;
+    await ContactDao().update(currentUser);
     value += valor;
     notifyListeners();
   }
 
-  void subtract(double valor) {
+  void subtract(double valor) async {
+    String? email = AuthService.to.user?.email ?? '';
+
+    Contact currentUser = await ContactDao().findByEmail(email);
+    currentUser.balance = currentUser.balance! + valor;
+    await ContactDao().update(currentUser);
     value -= valor;
     notifyListeners();
   }
