@@ -1,3 +1,4 @@
+import 'package:bytebank2/services/auth.dart';
 import 'package:bytebank2/views/contacts/form.dart';
 import 'package:bytebank2/views/dashboard.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +72,7 @@ class _LoginState extends State<Login> {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const Dashboard(),
+                          builder: (context) => login(),
                         ),
                       );
                     },
@@ -84,5 +85,10 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
+  }
+
+  login() {
+    AuthService.to
+        .signIn(_accountNumberController.text, _passwordController.text);
   }
 }

@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:bytebank2/components/check_auth.dart';
 import 'package:bytebank2/models/balance.dart';
+import 'package:bytebank2/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 
@@ -13,6 +16,7 @@ void main() async {
 
   await Firebase.initializeApp();
 
+  Get.lazyPut<AuthService>(() => AuthService());
   // Pass all uncaught errors from the framework to Crashlytics.
 
   if (kDebugMode) {
