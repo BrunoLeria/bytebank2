@@ -1,4 +1,4 @@
-import 'package:bytebank2/databases/dao/contact.dart';
+import 'package:bytebank2/database/dao/contact.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:flutter/material.dart';
 
@@ -15,10 +15,13 @@ class _ContactFormState extends State<ContactForm> {
   final TextEditingController _accountNumberController =
       TextEditingController();
 
+  final TextEditingController _passwordController = TextEditingController();
+
   final ContactDao _contactDao = ContactDao();
-  final String _appBarTitle = "New Contact";
+  final String _appBarTitle = "New user";
   final String _nameLabel = "Full name";
   final String _accountNumberLabel = "Account number";
+  final String _passwordLabel = "Password";
   final String _elevatedButtonLabel = "Create";
   final double _fontSizeForLabels = 24.0;
 
@@ -49,6 +52,17 @@ class _ContactFormState extends State<ContactForm> {
               ),
               style: TextStyle(fontSize: _fontSizeForLabels),
               keyboardType: TextInputType.number,
+            ),
+            TextField(
+              obscureText: true,
+              controller: _passwordController,
+              decoration: InputDecoration(
+                labelText: _passwordLabel,
+                prefixIcon: const Icon(Icons.lock),
+              ),
+              style: TextStyle(fontSize: _fontSizeForLabels),
+              keyboardType: TextInputType.number,
+              maxLength: 4,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 16.0),

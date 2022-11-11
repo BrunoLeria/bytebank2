@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bytebank2/views/login.dart';
+import 'package:bytebank2/components/check_auth.dart';
 import 'package:bytebank2/models/balance.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -53,7 +53,7 @@ class ByteBankApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const Login(),
+      home: CheckAuth(),
     );
   }
 }

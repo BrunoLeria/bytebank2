@@ -1,3 +1,4 @@
+import 'package:bytebank2/views/contacts/form.dart';
 import 'package:bytebank2/views/dashboard.dart';
 import 'package:flutter/material.dart';
 
@@ -45,6 +46,7 @@ class _LoginState extends State<Login> {
               ),
             ),
             TextField(
+              obscureText: true,
               controller: _passwordController,
               decoration: InputDecoration(
                 labelText: _passwordLabel,
@@ -53,10 +55,30 @@ class _LoginState extends State<Login> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                  child: const Text('Login'),
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const Dashboard()))),
+              child: ButtonBar(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const ContactForm(),
+                        ),
+                      );
+                    },
+                    child: const Text('Register'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const Dashboard(),
+                        ),
+                      );
+                    },
+                    child: const Text('Login'),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

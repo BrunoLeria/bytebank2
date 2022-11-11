@@ -1,4 +1,4 @@
-import 'package:bytebank2/databases/app.dart';
+import 'package:bytebank2/database/app.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:sqflite/sqlite_api.dart';
 
