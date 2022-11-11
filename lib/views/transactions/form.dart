@@ -70,7 +70,9 @@ class _TransactionFormState extends State<TransactionForm> {
                 child: TextField(
                   controller: _valueController,
                   style: const TextStyle(fontSize: 24.0),
-                  decoration: const InputDecoration(labelText: 'Value'),
+                  decoration: const InputDecoration(
+                      labelText: 'Value',
+                      prefixIcon: Icon(Icons.monetization_on)),
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                 ),
@@ -119,7 +121,9 @@ class _TransactionFormState extends State<TransactionForm> {
     setState(() {
       _sending = true;
     });
-    await _webClient.save(transactionCreated, password).then((transaction) {
+    await _webClient
+        .save(transactionCreated, password, context)
+        .then((transaction) {
       _showSuccessfulMessage(context);
     }).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
@@ -127,7 +131,7 @@ class _TransactionFormState extends State<TransactionForm> {
         context,
         message: e.message,
       );
-    }, test: (e) => e is HttpException).catchError((e) {
+    }, test: (e) => e is HttpException || e is CustomException).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
       _showFailureMessage(
         context,
@@ -137,8 +141,8 @@ class _TransactionFormState extends State<TransactionForm> {
       sendToCrashlytics(e, transactionCreated);
       _showFailureMessage(context);
     }).whenComplete(() => setState(() {
-          _sending = false;
-        }));
+              _sending = false;
+            }));
   }
 
   void sendToCrashlytics(e, Transaction transactionCreated) {

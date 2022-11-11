@@ -1,7 +1,7 @@
+import 'package:bytebank2/components/balance_card.dart';
 import 'package:bytebank2/views/contacts/list.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:bytebank2/views/deposits/form.dart';
 import 'package:flutter/material.dart';
-
 import 'transactions/list.dart';
 
 class Dashboard extends StatelessWidget {
@@ -18,9 +18,12 @@ class Dashboard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset("images/bytebank_logo.png"),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: BalanceCard(),
+            ),
           ),
           SizedBox(
             height: 120,
@@ -29,6 +32,11 @@ class Dashboard extends StatelessWidget {
               children: [
                 Row(
                   children: [
+                    _FeatureItem(
+                      'Deposit',
+                      Icons.money,
+                      onClick: () => _showDepositForm(context),
+                    ),
                     _FeatureItem(
                       'Transfer',
                       Icons.monetization_on,
@@ -57,6 +65,11 @@ class Dashboard extends StatelessWidget {
   void _showTransactionsList(BuildContext context) {
     Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const TransactionsList()));
+  }
+
+  _showDepositForm(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => DepositForm()));
   }
 }
 
