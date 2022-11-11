@@ -6,19 +6,16 @@ class ContactDao {
   static const String tableSql = 'CREATE TABLE $_tableName('
       '$_id INTEGER PRIMARY KEY, '
       '$_name TEXT, '
-      '$_accountNumber INTEGER, '
-      '$_userId INTEGER,)';
+      '$_accountNumber INTEGER)';
   static const String _tableName = 'contacts';
   static const String _id = 'id';
   static const String _name = 'name';
   static const String _accountNumber = 'account_number';
-  static const String _userId = 'userId';
 
   Map<String, dynamic> _toMap(Contact contact) {
     final Map<String, dynamic> contactMap = {};
     contactMap[_name] = contact.name;
     contactMap[_accountNumber] = contact.accountNumber;
-    contactMap[_userId] = contact.userId;
     return contactMap;
   }
 
@@ -26,7 +23,7 @@ class ContactDao {
     final List<Contact> contacts = [];
     for (Map<String, dynamic> row in results) {
       final Contact contact =
-          Contact(row[_id], row[_name], row[_accountNumber], row[_userId]);
+          Contact(row[_id], row[_name], row[_accountNumber]);
       contacts.add(contact);
     }
     return contacts;
@@ -40,13 +37,6 @@ class ContactDao {
   Future<List<Contact>> findAll() async {
     final Database db = await getDatabase();
     final List<Map<String, dynamic>> results = await db.query('contacts');
-    return _toList(results);
-  }
-
-  Future<List<Contact>> findAllByUser(userId) async {
-    final Database db = await getDatabase();
-    final List<Map<String, dynamic>> results =
-        await db.query('contacts', where: '$_userId = ?', whereArgs: [userId]);
     return _toList(results);
   }
 
