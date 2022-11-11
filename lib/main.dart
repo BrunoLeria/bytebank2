@@ -1,31 +1,30 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:bytebank2/components/check_auth.dart';
 import 'package:bytebank2/models/balance.dart';
 import 'package:bytebank2/services/auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   Get.lazyPut<AuthService>(() => AuthService());
   // Pass all uncaught errors from the framework to Crashlytics.
 
-  if (kDebugMode) {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-  } else {
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-    FirebaseCrashlytics.instance.setUserIdentifier("qhs4mgkg9xt4tdi");
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-  }
+  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  FirebaseCrashlytics.instance.setUserIdentifier("qhs4mgkg9xt4tdi");
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  //await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+
   runZonedGuarded<Future<void>>(() async {
     runApp(MultiProvider(
         providers: [ChangeNotifierProvider(create: (context) => Balance(0))],

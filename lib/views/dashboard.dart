@@ -2,6 +2,8 @@ import 'package:bytebank2/components/balance_card.dart';
 import 'package:bytebank2/views/contacts/list.dart';
 import 'package:bytebank2/views/deposits/form.dart';
 import 'package:flutter/material.dart';
+import '../services/auth.dart';
+import 'login.dart';
 import 'transactions/list.dart';
 
 class Dashboard extends StatelessWidget {
@@ -13,6 +15,13 @@ class Dashboard extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: () => _logout(context),
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,6 +79,12 @@ class Dashboard extends StatelessWidget {
   _showDepositForm(BuildContext context) {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => DepositForm()));
+  }
+
+  void _logout(BuildContext context) {
+    AuthService.to.signOut(context);
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => const Login()));
   }
 }
 

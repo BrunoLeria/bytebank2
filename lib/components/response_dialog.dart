@@ -69,9 +69,9 @@ class SuccessDialog extends StatelessWidget {
   final String message;
   final IconData icon;
 
-  const SuccessDialog(
-    this.message, {
+  const SuccessDialog({
     Key? key,
+    this.message = '',
     this.title = 'Success',
     this.icon = Icons.done,
   }) : super(key: key);
@@ -85,6 +85,16 @@ class SuccessDialog extends StatelessWidget {
       colorIcon: Colors.green,
     );
   }
+
+  void showSuccessfulSnackBar(BuildContext context, String message) {
+    Navigator.pop(context);
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.green[900],
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 }
 
 class FailureDialog extends StatelessWidget {
@@ -92,9 +102,9 @@ class FailureDialog extends StatelessWidget {
   final String message;
   final IconData icon;
 
-  const FailureDialog(
-    this.message, {
+  const FailureDialog({
     Key? key,
+    this.message = '',
     this.title = 'Failure',
     this.icon = Icons.warning,
   }) : super(key: key);
@@ -107,5 +117,16 @@ class FailureDialog extends StatelessWidget {
       icon: icon,
       colorIcon: Colors.red,
     );
+  }
+
+  void showFailureSnackBar(BuildContext context,
+      {String message =
+          'Erro desconhecido, por favor entre contato com o nosso'}) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red[900],
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

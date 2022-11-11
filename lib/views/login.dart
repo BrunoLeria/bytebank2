@@ -43,17 +43,19 @@ class _LoginState extends State<Login> {
                   icon: const Icon(Icons.email),
                 ),
                 style: TextStyle(fontSize: _fontSizeForLabels),
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.emailAddress,
               ),
             ),
             TextField(
               obscureText: true,
               controller: _passwordController,
+              maxLength: 6,
               decoration: InputDecoration(
                 labelText: _passwordLabel,
                 icon: const Icon(Icons.lock),
               ),
               style: TextStyle(fontSize: _fontSizeForLabels),
+              keyboardType: TextInputType.number,
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -70,13 +72,7 @@ class _LoginState extends State<Login> {
                     child: const Text('Register'),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => login(),
-                        ),
-                      );
-                    },
+                    onPressed: () => login(context),
                     child: const Text('Login'),
                   ),
                 ],
@@ -88,7 +84,8 @@ class _LoginState extends State<Login> {
     );
   }
 
-  login() {
-    AuthService.to.signIn(_emailController.text, _passwordController.text);
+  login(BuildContext context) {
+    AuthService.to
+        .signIn(_emailController.text, _passwordController.text, context);
   }
 }

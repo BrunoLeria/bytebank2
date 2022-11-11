@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:bytebank2/components/response_dialog.dart';
 import 'package:bytebank2/database/dao/contact.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +65,7 @@ class _ContactFormState extends State<ContactForm> {
                 ),
                 style: TextStyle(fontSize: _fontSizeForLabels),
                 keyboardType: TextInputType.number,
-                maxLength: 4,
+                maxLength: 6,
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
@@ -74,12 +77,14 @@ class _ContactFormState extends State<ContactForm> {
                       final String name = _nameController.text;
                       final String email = _emailController.text;
                       final String password = _passwordController.text;
-                      final int accountNumber = 1000;
+                      final int accountNumber = generateRadomAccountNumber();
                       final Contact newContact =
                           Contact(id, name, email, accountNumber);
                       _contactDao
-                          .save(newContact, password)
-                          .then((id) => Navigator.pop(context));
+                          .save(newContact, password, context)
+                          .then((id) {
+                        Navigator.pop(context);
+                      });
                     },
                     child: Text(_elevatedButtonLabel),
                   ),
@@ -90,5 +95,16 @@ class _ContactFormState extends State<ContactForm> {
         ),
       ),
     );
+  }
+
+  int generateRadomAccountNumber() {
+    final Random random = Random();
+    int accountNumber = random.nextInt(10000);
+    _contactDao.findAllAccountNumbers().then((accountNumbers) {
+      while (accountNumbers.contains(accountNumber)) {
+        accountNumber = random.nextInt(10000);
+      }
+    });
+    return accountNumber;
   }
 }

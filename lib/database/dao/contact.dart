@@ -1,6 +1,7 @@
 import 'package:bytebank2/database/app.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:bytebank2/services/auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class ContactDao {
@@ -33,9 +34,9 @@ class ContactDao {
     return contacts;
   }
 
-  Future<int> save(Contact contact, password) async {
+  Future<int> save(Contact contact, password, BuildContext context) async {
     final Database db = await getDatabase();
-    AuthService.to.signUp(contact.email!, password);
+    AuthService.to.signUp(contact.email!, password, context);
     return db.insert('contacts', _toMap(contact));
   }
 
@@ -43,6 +44,16 @@ class ContactDao {
     final Database db = await getDatabase();
     final List<Map<String, dynamic>> results = await db.query('contacts');
     return _toList(results);
+  }
+
+  Future<List<int>> findAllAccountNumbers() async {
+    final Database db = await getDatabase();
+    final List<Map<String, dynamic>> results = await db.query('contacts');
+    final List<int> accountNumbers = [];
+    for (Map<String, dynamic> row in results) {
+      accountNumbers.add(row[_accountNumber]);
+    }
+    return accountNumbers;
   }
 
   Future<int> update(Contact contact) async {

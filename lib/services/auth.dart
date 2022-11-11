@@ -1,9 +1,15 @@
 import 'package:bytebank2/components/response_dialog.dart';
+import 'package:bytebank2/views/dashboard.dart';
+import 'package:bytebank2/views/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AuthService extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final SuccessDialog? successDialog = new SuccessDialog();
+  final FailureDialog? failureDialog = new FailureDialog();
   Rx<User?>? _firebaseUser;
   RxBool userIsLogged = false.obs;
 
@@ -14,44 +20,63 @@ class AuthService extends GetxController {
     _firebaseUser!.bindStream(_auth.authStateChanges());
 
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      userIsLogged.value = user != null;
+      if (user == null) {
+        print('User is currently signed out!');
+        userIsLogged.value = false;
+      } else {
+        print('User is signed in!');
+        userIsLogged.value = true;
+      }
     });
   }
 
   User? get user => _firebaseUser!.value;
   static AuthService get to => Get.find<AuthService>();
 
-  Future<User?> signIn(String email, String password) async {
+  signIn(String email, String password, BuildContext context) async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      return userCredential.user;
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      if (userIsLogged.value) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => const Dashboard()));
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        const FailureDialog('No user found for that email.');
+        failureDialog!.showFailureSnackBar(context,
+            message: 'No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        const FailureDialog('Wrong password provided for that user.');
-      }
-    }
-  }
-
-  Future<User?> signUp(String email, String password) async {
-    try {
-      UserCredential userCredential = await _auth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      return userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        const FailureDialog('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        const FailureDialog('The account already exists for that email.');
+        failureDialog!.showFailureSnackBar(context,
+            message: 'Wrong password provided for that user.');
       }
     } catch (e) {
-      FailureDialog(e.toString());
+      failureDialog!.showFailureSnackBar(context, message: e.toString());
     }
   }
 
-  Future<void> signOut() async {
+  signUp(String email, String password, BuildContext context) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      signOut(context);
+      successDialog!.showSuccessfulSnackBar(context, "Welcome to Bytebank!");
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        failureDialog!.showFailureSnackBar(context,
+            message: 'The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        failureDialog!.showFailureSnackBar(context,
+            message: 'The account already exists for that email.');
+      }
+    } catch (e) {
+      failureDialog!.showFailureSnackBar(context, message: e.toString());
+    }
+  }
+
+  signOut(BuildContext context) async {
     await _auth.signOut();
+    if (!userIsLogged.value) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => Login()));
+    }
   }
 }

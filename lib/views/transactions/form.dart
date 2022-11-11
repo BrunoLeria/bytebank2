@@ -24,6 +24,8 @@ class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _valueController = TextEditingController();
   final TransactionWebClient _webClient = TransactionWebClient();
   final String transactionID = const Uuid().v4();
+  final SuccessDialog? successDialog = new SuccessDialog();
+  final FailureDialog? failureDialog = new FailureDialog();
   bool _sending = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -99,7 +101,7 @@ class _TransactionFormState extends State<TransactionForm> {
   void _initiateTransaction(BuildContext context) {
     final double? value = double.tryParse(_valueController.text);
     if (value == null) {
-      _showFailureMessage(
+      failureDialog!.showFailureSnackBar(
         context,
         message: "Informe um valor válido para a transação.",
       );
@@ -124,22 +126,23 @@ class _TransactionFormState extends State<TransactionForm> {
     await _webClient
         .save(transactionCreated, password, context)
         .then((transaction) {
-      _showSuccessfulMessage(context);
+      successDialog!
+          .showSuccessfulSnackBar(context, 'Transação feita com sucesso!');
     }).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
-      _showFailureMessage(
+      failureDialog!.showFailureSnackBar(
         context,
         message: e.message,
       );
     }, test: (e) => e is HttpException || e is CustomException).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
-      _showFailureMessage(
+      failureDialog!.showFailureSnackBar(
         context,
         message: "Houve um problema com a conexão. Tente novamente mais tarde.",
       );
     }, test: (e) => e is TimeoutException).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
-      _showFailureMessage(context);
+      failureDialog!.showFailureSnackBar(context);
     }).whenComplete(() => setState(() {
               _sending = false;
             }));
@@ -153,26 +156,5 @@ class _TransactionFormState extends State<TransactionForm> {
           .setCustomKey("http_body", transactionCreated.toString());
       FirebaseCrashlytics.instance.recordError(e.message, null);
     }
-  }
-
-  void _showFailureMessage(BuildContext context,
-      {String message =
-          'Erro desconhecido, por favor entre contato com o nosso'}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.red[900],
-      duration: const Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void _showSuccessfulMessage(BuildContext context) {
-    Navigator.pop(context);
-    final snackBar = SnackBar(
-      content: const Text('Transação feita com sucesso!'),
-      backgroundColor: Colors.green[900],
-      duration: const Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

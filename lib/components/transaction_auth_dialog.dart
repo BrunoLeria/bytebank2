@@ -25,7 +25,7 @@ class _TransactionAuthDialogState extends State<TransactionAuthDialog> {
       content: TextField(
         controller: _passwordController,
         obscureText: true,
-        maxLength: 4,
+        maxLength: 6,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         style: const TextStyle(
