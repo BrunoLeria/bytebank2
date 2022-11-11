@@ -7,23 +7,27 @@ class ContactDao {
   static const String tableSql = 'CREATE TABLE $_tableName('
       '$_id INTEGER PRIMARY KEY, '
       '$_name TEXT, '
-      '$_email TEXT)';
+      '$_email TEXT, '
+      '$_accountNumber INTEGER)';
   static const String _tableName = 'contacts';
   static const String _id = 'id';
   static const String _name = 'name';
   static const String _email = 'email';
+  static const String _accountNumber = 'account_number';
 
   Map<String, dynamic> _toMap(Contact contact) {
     final Map<String, dynamic> contactMap = {};
     contactMap[_name] = contact.name;
     contactMap[_email] = contact.email;
+    contactMap[_accountNumber] = contact.accountNumber;
     return contactMap;
   }
 
   List<Contact> _toList(List<Map<String, dynamic>> results) {
     final List<Contact> contacts = [];
     for (Map<String, dynamic> row in results) {
-      final Contact contact = Contact(row[_id], row[_name], row[_email]);
+      final Contact contact =
+          Contact(row[_id], row[_name], row[_email], row[_accountNumber]);
       contacts.add(contact);
     }
     return contacts;

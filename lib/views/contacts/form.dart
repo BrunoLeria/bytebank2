@@ -30,59 +30,63 @@ class _ContactFormState extends State<ContactForm> {
       appBar: AppBar(title: Text(_appBarTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: TextField(
-                controller: _nameController,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: _nameLabel,
+                    prefixIcon: const Icon(Icons.person),
+                  ),
+                  style: TextStyle(fontSize: _fontSizeForLabels),
+                ),
+              ),
+              TextField(
+                controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: _nameLabel,
-                  prefixIcon: const Icon(Icons.person),
+                  labelText: _emailLabel,
+                  prefixIcon: const Icon(Icons.email),
                 ),
                 style: TextStyle(fontSize: _fontSizeForLabels),
+                keyboardType: TextInputType.emailAddress,
               ),
-            ),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: _emailLabel,
-                prefixIcon: const Icon(Icons.email),
-              ),
-              style: TextStyle(fontSize: _fontSizeForLabels),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              obscureText: true,
-              controller: _passwordController,
-              decoration: InputDecoration(
-                labelText: _passwordLabel,
-                prefixIcon: const Icon(Icons.lock),
-              ),
-              style: TextStyle(fontSize: _fontSizeForLabels),
-              keyboardType: TextInputType.number,
-              maxLength: 4,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: SizedBox(
-                width: double.maxFinite,
-                child: ElevatedButton(
-                  onPressed: () {
-                    const int id = 0;
-                    final String name = _nameController.text;
-                    final String email = _emailController.text;
-                    final String password = _passwordController.text;
-                    final Contact newContact = Contact(id, name, email);
-                    _contactDao
-                        .save(newContact, password)
-                        .then((id) => Navigator.pop(context));
-                  },
-                  child: Text(_elevatedButtonLabel),
+              TextField(
+                obscureText: true,
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  labelText: _passwordLabel,
+                  prefixIcon: const Icon(Icons.lock),
                 ),
+                style: TextStyle(fontSize: _fontSizeForLabels),
+                keyboardType: TextInputType.number,
+                maxLength: 4,
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: SizedBox(
+                  width: double.maxFinite,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      const int id = 0;
+                      final String name = _nameController.text;
+                      final String email = _emailController.text;
+                      final String password = _passwordController.text;
+                      final int accountNumber = 1000;
+                      final Contact newContact =
+                          Contact(id, name, email, accountNumber);
+                      _contactDao
+                          .save(newContact, password)
+                          .then((id) => Navigator.pop(context));
+                    },
+                    child: Text(_elevatedButtonLabel),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
