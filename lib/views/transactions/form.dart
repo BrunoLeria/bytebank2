@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bytebank2/components/loading.dart';
 import 'package:bytebank2/components/transaction_auth_dialog.dart';
+import 'package:bytebank2/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
@@ -123,8 +125,21 @@ class _TransactionFormState extends State<TransactionForm> {
     setState(() {
       _sending = true;
     });
+    String email = FirebaseAuth.instance.currentUser?.email ?? "";
+    bool? result = await AuthService.to.signIn(email, password, context);
+    print(result);
+    if (!result!) {
+      setState(() {
+        _sending = false;
+      });
+      failureDialog!.showFailureSnackBar(
+        context,
+        message: "Transação não autorizada.",
+      );
+      return;
+    }
     await _webClient
-        .save(transactionCreated, password, context)
+        .save(transactionCreated, "1000", context)
         .then((transaction) {
       successDialog!
           .showSuccessfulSnackBar(context, 'Transação feita com sucesso!');

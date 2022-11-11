@@ -33,13 +33,15 @@ class AuthService extends GetxController {
   User? get user => _firebaseUser!.value;
   static AuthService get to => Get.find<AuthService>();
 
-  signIn(String email, String password, BuildContext context) async {
+  Future<bool?> signIn(
+      String email, String password, BuildContext context) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       if (userIsLogged.value) {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => const Dashboard()));
       }
+      return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         failureDialog!.showFailureSnackBar(context,
@@ -48,8 +50,10 @@ class AuthService extends GetxController {
         failureDialog!.showFailureSnackBar(context,
             message: 'Wrong password provided for that user.');
       }
+      return false;
     } catch (e) {
       failureDialog!.showFailureSnackBar(context, message: e.toString());
+      return false;
     }
   }
 
