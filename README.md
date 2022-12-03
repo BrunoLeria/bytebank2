@@ -2,6 +2,12 @@
 
 A new Flutter project.
 
+Olá antes de iniciar o aplicativo precisa ativar o servidor para registrar as transferencias pela API.
+
+Abrir o prompt de comando na pasta lib/server e executar o comando
+
+'java -jar server.jar'
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

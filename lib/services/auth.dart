@@ -2,14 +2,16 @@ import 'package:bytebank2/components/response_dialog.dart';
 import 'package:bytebank2/views/dashboard.dart';
 import 'package:bytebank2/views/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/services.dart';
+import 'package:local_auth/local_auth.dart';
 
 class AuthService extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final SuccessDialog? successDialog = new SuccessDialog();
   final FailureDialog? failureDialog = new FailureDialog();
+
   Rx<User?>? _firebaseUser;
   RxBool userIsLogged = false.obs;
 
@@ -82,5 +84,30 @@ class AuthService extends GetxController {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => Login()));
     }
+  }
+
+  static Future<bool> authenticateUser() async {
+    //initialize Local Authentication plugin.
+    final LocalAuthentication localAuthentication = LocalAuthentication();
+    //status of authentication.
+    bool isAuthenticated = false;
+    //check if device supports biometrics authentication.
+    bool isBiometricSupported = await localAuthentication.isDeviceSupported();
+    //check if user has enabled biometrics.
+    //check
+    bool canCheckBiometrics = await localAuthentication.canCheckBiometrics;
+
+    //if device supports biometrics and user has enabled biometrics, then authenticate.
+    if (isBiometricSupported && canCheckBiometrics) {
+      try {
+        isAuthenticated = await localAuthentication.authenticate(
+            localizedReason: 'Scan your fingerprint to authenticate',
+            options: const AuthenticationOptions(
+                biometricOnly: true, useErrorDialogs: true, stickyAuth: true));
+      } on PlatformException catch (e) {
+        print(e);
+      }
+    }
+    return isAuthenticated;
   }
 }

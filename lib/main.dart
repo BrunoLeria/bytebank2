@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:local_auth/local_auth.dart';
 import 'firebase_options.dart';
 import 'package:bytebank2/components/check_auth.dart';
 import 'package:bytebank2/models/balance.dart';
