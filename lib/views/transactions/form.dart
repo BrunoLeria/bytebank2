@@ -127,7 +127,6 @@ class _TransactionFormState extends State<TransactionForm> {
     });
     String email = FirebaseAuth.instance.currentUser?.email ?? "";
     bool? result = await AuthService.to.signIn(email, password, context);
-    print(result);
     if (!result!) {
       setState(() {
         _sending = false;
