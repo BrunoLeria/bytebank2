@@ -87,7 +87,7 @@ class Dashboard extends StatelessWidget {
   void _logout(BuildContext context) {
     AuthService.to.signOut(context);
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => const Login()));
+        .push(MaterialPageRoute(builder: (context) => Login()));
   }
 
   void updateBalance(BuildContext context) {

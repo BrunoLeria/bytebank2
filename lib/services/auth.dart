@@ -7,6 +7,9 @@ import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 
+import '../database/dao/contact.dart';
+import '../models/contact.dart';
+
 class AuthService extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final SuccessDialog? successDialog = new SuccessDialog();
@@ -86,11 +89,11 @@ class AuthService extends GetxController {
     }
   }
 
-  static Future<bool> authenticateUser() async {
+  Future<bool?> authenticateUser(BuildContext context, String email) async {
     //initialize Local Authentication plugin.
     final LocalAuthentication localAuthentication = LocalAuthentication();
     //status of authentication.
-    bool isAuthenticated = false;
+    bool? isAuthenticated = false;
     //check if device supports biometrics authentication.
     bool isBiometricSupported = await localAuthentication.isDeviceSupported();
     //check if user has enabled biometrics.
@@ -104,8 +107,14 @@ class AuthService extends GetxController {
             localizedReason: 'Scan your fingerprint to authenticate',
             options: const AuthenticationOptions(
                 biometricOnly: true, useErrorDialogs: true, stickyAuth: true));
+        if (isAuthenticated) {
+          Contact currentUser = await ContactDao().findByEmail(email);
+          String password = currentUser.password!;
+          isAuthenticated = await signIn(email, password, context);
+        }
       } on PlatformException catch (e) {
-        print(e);
+        failureDialog!.showFailureSnackBar(context,
+            message: 'Failed to authenticate. Try again later.');
       }
     }
     return isAuthenticated;

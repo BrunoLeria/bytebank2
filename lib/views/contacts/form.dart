@@ -80,7 +80,9 @@ class _ContactFormState extends State<ContactForm> {
                       final int accountNumber = generateRadomAccountNumber();
                       const double balance = 1000.0;
                       final Contact newContact =
-                          Contact(id, name, email, accountNumber, balance);
+                          Contact(id, name, email, accountNumber);
+                      newContact.balance = balance;
+                      newContact.password = password;
                       _contactDao
                           .save(newContact, password, context)
                           .then((id) {

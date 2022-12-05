@@ -6,6 +6,7 @@ Future<Database> getDatabase() async {
   final String path = join(await getDatabasesPath(), 'bytebank.db');
   return openDatabase(
     path,
+    onOpen: (db) => db.execute(ContactDao.tableSql),
     onCreate: ((db, version) => db.execute(ContactDao.tableSql)),
     version: 2,
     onDowngrade: onDatabaseDowngradeDelete,

@@ -6,33 +6,40 @@ import 'package:sqflite/sqlite_api.dart';
 
 class ContactDao {
   static const String dropTableSql = 'DROP TABLE IF EXISTS $_tableName;';
-  static const String tableSql = 'CREATE TABLE $_tableName('
+  static const String tableSql = 'CREATE TABLE IF NOT EXISTS $_tableName('
       '$_id INTEGER PRIMARY KEY, '
       '$_name TEXT, '
       '$_email TEXT, '
-      '$_balance REAL, '
-      '$_accountNumber INTEGER)';
+      '$_password TEXT, '
+      '$_accountNumber INTEGER, '
+      '$_balance REAL)';
   static const String _tableName = 'contacts';
   static const String _id = 'id';
   static const String _name = 'name';
   static const String _email = 'email';
+  static const String _password = 'password';
   static const String _balance = 'balance';
   static const String _accountNumber = 'account_number';
 
   Map<String, dynamic> _toMap(Contact contact) {
+    print(contact);
     final Map<String, dynamic> contactMap = {};
     contactMap[_name] = contact.name;
     contactMap[_email] = contact.email;
-    contactMap[_accountNumber] = contact.accountNumber;
+    contactMap[_password] = contact.password;
     contactMap[_balance] = contact.balance;
+    contactMap[_accountNumber] = contact.accountNumber;
+    print(contactMap);
+    print(contactMap[_password]);
+    print(contactMap[_balance]);
     return contactMap;
   }
 
   List<Contact> _toList(List<Map<String, dynamic>> results) {
     final List<Contact> contacts = [];
     for (Map<String, dynamic> row in results) {
-      final Contact contact = Contact(row[_id], row[_name], row[_email],
-          row[_accountNumber], row[_balance]);
+      final Contact contact =
+          Contact(row[_id], row[_name], row[_email], row[_accountNumber]);
       contacts.add(contact);
     }
     return contacts;
@@ -54,7 +61,11 @@ class ContactDao {
     final Database db = await getDatabase();
     final List<Map<String, dynamic>> results =
         await db.query('contacts', where: 'email = ?', whereArgs: [email]);
-    return _toList(results).first;
+    Contact contact = Contact(results[0][_id], results[0][_name],
+        results[0][_email], results[0][_accountNumber]);
+    contact.balance = results[0][_balance];
+    contact.password = results[0][_password];
+    return contact;
   }
 
   Future<List<int>> findAllAccountNumbers() async {
@@ -81,7 +92,7 @@ class ContactDao {
     final Database db = await getDatabase();
     final List<Map<String, dynamic>> results =
         await db.query('contacts', where: 'email = ?', whereArgs: [email]);
-    return results[0][_balance];
+    return results[0][_balance] ?? 0.0;
   }
 
   Future<void> delete(int id) async {
