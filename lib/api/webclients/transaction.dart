@@ -28,7 +28,8 @@ class TransactionWebClient {
         headers: {'Content-type': 'application/json', 'password': password},
         body: transactionJson);
     if (response.statusCode == 200) {
-      Provider.of<Balance>(context, listen: false).subtract(transaction.value);
+      Provider.of<Balance>(context, listen: false)
+          .subtract(transaction.contact, transaction.value);
       return Transaction.fromJson(jsonDecode(response.body));
     }
     throw HttpException(_getMessage(response.statusCode));

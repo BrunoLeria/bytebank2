@@ -26,7 +26,7 @@ class Balance extends ChangeNotifier {
     notifyListeners();
   }
 
-  void subtract(double valor) async {
+  void subtract(Contact contact, double valor) async {
     String? email = AuthService.to.user?.email ?? '';
 
     Contact currentUser = await ContactDao().findByEmail(email);
@@ -34,6 +34,11 @@ class Balance extends ChangeNotifier {
     await ContactDao().update(currentUser);
     value -= valor;
     notifyListeners();
+
+    int accountNumber = contact.accountNumber ?? 0;
+    contact = await ContactDao().findByAccountNumber(accountNumber);
+    contact.balance = contact.balance! + value;
+    ContactDao().update(contact);
   }
 
   @override
