@@ -68,6 +68,17 @@ class ContactDao {
     return contact;
   }
 
+  Future<Contact> findByAccountNumber(int accountNumber) async {
+    final Database db = await getDatabase();
+    final List<Map<String, dynamic>> results = await db.query('contacts',
+        where: 'account_number = ?', whereArgs: [accountNumber]);
+    Contact contact = Contact(results[0][_id], results[0][_name],
+        results[0][_email], results[0][_accountNumber]);
+    contact.balance = results[0][_balance];
+    contact.password = results[0][_password];
+    return contact;
+  }
+
   Future<List<int>> findAllAccountNumbers() async {
     final Database db = await getDatabase();
     final List<Map<String, dynamic>> results = await db.query('contacts');
