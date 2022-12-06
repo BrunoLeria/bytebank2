@@ -30,6 +30,8 @@ dependencies:
   flutter:
     sdk: flutter
   sqflite:
+  camera:
+  path_provider:
   path:
   http:
   http_interceptor:

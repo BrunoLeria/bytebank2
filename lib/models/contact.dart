@@ -5,6 +5,7 @@ class Contact {
   String? password;
   double? balance;
   final int? accountNumber;
+  String? image;
 
   Contact(this.id, this.name, this.email, this.accountNumber);
 
