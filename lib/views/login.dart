@@ -20,7 +20,6 @@ class _LoginState extends State<Login> {
 
   final double _fontSizeForLabels = 24.0;
 
-  final FailureDialog? failureDialog = const FailureDialog();
 
   bool _informedEmail = false;
 
@@ -106,8 +105,7 @@ class _LoginState extends State<Login> {
 
   showPasswordField(BuildContext context) {
     if (_emailController.text.isEmpty) {
-      failureDialog!
-          .showFailureSnackBar(context, message: 'Please, inform your email');
+      FailureDialog(message: 'Please, inform your email');
       return;
     }
     setState(() {
@@ -122,8 +120,7 @@ class _LoginState extends State<Login> {
 
   loginWithBiometrics(BuildContext context) async {
     if (_emailController.text.isEmpty) {
-      failureDialog!
-          .showFailureSnackBar(context, message: 'Please, inform your email');
+      FailureDialog(message: 'Please, inform your email');
       return;
     }
     await AuthService.to.authenticateUser(context, _emailController.text);

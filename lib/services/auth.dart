@@ -13,7 +13,6 @@ import '../models/contact.dart';
 class AuthService extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final SuccessDialog? successDialog = new SuccessDialog();
-  final FailureDialog? failureDialog = new FailureDialog();
 
   Rx<User?>? _firebaseUser;
   RxBool userIsLogged = false.obs;
@@ -49,15 +48,15 @@ class AuthService extends GetxController {
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        failureDialog!.showFailureSnackBar(context,
+        FailureDialog(
             message: 'No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        failureDialog!.showFailureSnackBar(context,
+        FailureDialog(
             message: 'Wrong password provided for that user.');
       }
       return false;
     } catch (e) {
-      failureDialog!.showFailureSnackBar(context, message: e.toString());
+      FailureDialog( message: e.toString());
       return false;
     }
   }
@@ -70,10 +69,10 @@ class AuthService extends GetxController {
       successDialog!.showSuccessfulSnackBar(context, "Welcome to Bytebank!");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        failureDialog!.showFailureSnackBar(context,
+        FailureDialog(
             message: 'The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        failureDialog!.showFailureSnackBar(context,
+        FailureDialog(
             message: 'The account already exists for that email.');
       }
     } catch (e) {
@@ -113,7 +112,7 @@ class AuthService extends GetxController {
           isAuthenticated = await signIn(email, password, context);
         }
       } on PlatformException catch (e) {
-        failureDialog!.showFailureSnackBar(context,
+        FailureDialog(
             message: 'Failed to authenticate. Try again later.');
       }
     }

@@ -29,9 +29,6 @@ class ContactDao {
     contactMap[_password] = contact.password;
     contactMap[_balance] = contact.balance;
     contactMap[_accountNumber] = contact.accountNumber;
-    print(contactMap);
-    print(contactMap[_password]);
-    print(contactMap[_balance]);
     return contactMap;
   }
 

@@ -26,8 +26,6 @@ class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _valueController = TextEditingController();
   final TransactionWebClient _webClient = TransactionWebClient();
   final String transactionID = const Uuid().v4();
-  final SuccessDialog? successDialog = new SuccessDialog();
-  final FailureDialog? failureDialog = new FailureDialog();
   bool _sending = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -103,8 +101,7 @@ class _TransactionFormState extends State<TransactionForm> {
   void _initiateTransaction(BuildContext context) {
     final double? value = double.tryParse(_valueController.text);
     if (value == null) {
-      failureDialog!.showFailureSnackBar(
-        context,
+      const FailureDialog(
         message: "Informe um valor válido para a transação.",
       );
     }
@@ -131,32 +128,29 @@ class _TransactionFormState extends State<TransactionForm> {
       setState(() {
         _sending = false;
       });
-      failureDialog!.showFailureSnackBar(
-        context,
-        message: "Transação não autorizada.",
-      );
+      const FailureDialog(message: "Transação não autorizada.");
       return;
     }
     await _webClient
         .save(transactionCreated, "1000", context)
         .then((transaction) {
-      successDialog!
+      const SuccessDialog()
           .showSuccessfulSnackBar(context, 'Transação feita com sucesso!');
     }).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
-      failureDialog!.showFailureSnackBar(
-        context,
-        message: e.message,
+      FailureDialog(
+        message: e.toString(),
       );
     }, test: (e) => e is HttpException || e is CustomException).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
-      failureDialog!.showFailureSnackBar(
-        context,
+      const FailureDialog(
         message: "Houve um problema com a conexão. Tente novamente mais tarde.",
       );
     }, test: (e) => e is TimeoutException).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
-      failureDialog!.showFailureSnackBar(context);
+      const FailureDialog(
+        message: 'Erro desconhecido, por favor entre contato com o nosso',
+      );
     }).whenComplete(() => setState(() {
               _sending = false;
             }));
