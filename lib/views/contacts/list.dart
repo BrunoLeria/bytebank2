@@ -1,4 +1,6 @@
+import 'package:bytebank2/database/dao/avatar.dart';
 import 'package:bytebank2/database/dao/contact.dart';
+import 'package:bytebank2/models/avatar.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:bytebank2/views/contacts/form.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +28,7 @@ class _ContactsListState extends State<ContactsList> {
         ),
       ),
       body: FutureBuilder(
-        future: _contactDao.findAll(),
+        future: _contactDao.findAllExceptMe(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Loading();
@@ -62,24 +64,73 @@ class _ContactItem extends StatelessWidget {
 
   const _ContactItem(this.contact, {required this.onClick});
 
+  Future<Avatar> getAvatar() async {
+    final AvatarDao avatarDao = AvatarDao();
+    final Avatar avatar = await avatarDao.findByEmail(contact.email!);
+    return avatar;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        onTap: () => onClick(),
-        title: Text(
-          contact.name!,
-          style: const TextStyle(
-            fontSize: 24.0,
+    final AvatarDao avatarDao = AvatarDao();
+
+    return FutureBuilder(
+      future: getAvatar(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Loading();
+        }
+        final Avatar avatar = snapshot.data != null
+            ? snapshot.data as Avatar
+            : Avatar(null, null, null);
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: InkWell(
+            onTap: () => onClick(),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.2),
+                  border: Border.all(
+                    color: Colors.black.withOpacity(0.5),
+                    width: 5,
+                  )),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                child: Row(
+                  children: [
+                    avatar.imagem == null
+                        ? const Icon(
+                            Icons.portrait,
+                            color: Colors.grey,
+                            size: 100,
+                            semanticLabel: 'Profile avatar',
+                          )
+                        : avatar.imageFromBase64String(100, 100),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          contact.name!,
+                          style: const TextStyle(
+                            fontSize: 24.0,
+                          ),
+                        ),
+                        Text(
+                          contact.email!,
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
-        subtitle: Text(
-          contact.email!,
-          style: const TextStyle(
-            fontSize: 16.0,
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

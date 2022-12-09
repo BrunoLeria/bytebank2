@@ -57,6 +57,14 @@ class ContactDao {
     return _toList(results);
   }
 
+  Future<List<Contact>> findAllExceptMe() async {
+    final Database db = await getDatabase();
+    final List<Map<String, dynamic>> results = 
+        await db.query('contacts', where: 'email != ?', whereArgs: [AuthService.to.user!.email]);
+
+    return _toList(results);
+  }
+
   Future<Contact> findByEmail(String email) async {
     final Database db = await getDatabase();
     final List<Map<String, dynamic>> results =
