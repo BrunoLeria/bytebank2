@@ -1,11 +1,8 @@
 import 'package:bytebank2/components/feature_item.dart';
-import 'package:bytebank2/database/dao/contact.dart';
 import 'package:bytebank2/models/contact.dart';
-import 'package:bytebank2/views/dashboard.dart';
-import 'package:camera/camera.dart';
+import 'package:bytebank2/views/avatar.dart';
 import 'package:flutter/material.dart';
 
-import '../services/auth.dart';
 
 class Settings extends StatefulWidget {
   final Contact contact;
@@ -69,14 +66,22 @@ class _SettingsState extends State<Settings> {
                 ],
               ),
             ),
+            const Divider(),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: ButtonBar(
+                alignment: MainAxisAlignment.center,
                 children: [
                   FeatureItem(
                     'Change avatar',
                     Icons.camera_alt,
-                    onClick: () => _chooseProfilePicture(context),
+                    onClick: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AvatarPage(),
+                        fullscreenDialog: true
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -86,16 +91,4 @@ class _SettingsState extends State<Settings> {
       ),
     );
   }
-}
-
-_chooseProfilePicture(BuildContext context) async {
-  // Ensure that plugin services are initialized so that `availableCameras()`
-// can be called before `runApp()`
-  WidgetsFlutterBinding.ensureInitialized();
-
-// Obtain a list of the available cameras on the device.
-  final cameras = await availableCameras();
-
-// Get a specific camera from the list of available cameras.
-  final firstCamera = cameras.first;
 }
