@@ -1,11 +1,16 @@
-import 'dart:io';
 
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:bytebank2/database/dao/avatar.dart';
+import 'package:bytebank2/models/avatar.dart';
+import 'package:bytebank2/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AvatarPage extends StatefulWidget {
-  AvatarPage({Key? key}) : super(key: key);
+  const AvatarPage({Key? key}) : super(key: key);
 
   @override
   State<AvatarPage> createState() => _AvatarPageState();
@@ -16,10 +21,10 @@ class _AvatarPageState extends State<AvatarPage> {
   CameraController? controller;
   XFile? imageFile;
   Size? size;
+  final AvatarDao _avatarDao = AvatarDao();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loadCamera();
   }
@@ -28,7 +33,9 @@ class _AvatarPageState extends State<AvatarPage> {
     try {
       cameras = await availableCameras();
       _startCamera();
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   void _startCamera() {
@@ -49,7 +56,7 @@ class _AvatarPageState extends State<AvatarPage> {
           centerTitle: true,
           elevation: 0,
         ),
-        body: Container(
+        body: SizedBox(
           width: size!.width,
           height: size!.height,
           child: Column(
@@ -59,7 +66,7 @@ class _AvatarPageState extends State<AvatarPage> {
                   padding: const EdgeInsets.all(
                     32.0,
                   ),
-                  child: Container(
+                  child: SizedBox(
                     width: size!.width,
                     height: size!.height,
                     child: _cameraPreviewWidget(),
@@ -111,7 +118,7 @@ class _AvatarPageState extends State<AvatarPage> {
   }
 
   _botaoCapturar() {
-    return Container(
+    return SizedBox(
       width: size!.width,
       height: 100,
       child: Row(
@@ -174,35 +181,40 @@ class _AvatarPageState extends State<AvatarPage> {
     }
     try {
       XFile file = await cameracontroller.takePicture();
-      print(file);
-      print("foto tirada");
 
-      if (mounted)
+      if (mounted) {
         setState(() {
           imageFile = file;
         });
+      }
     } on CameraException catch (e) {
       print(e);
     }
   }
 
-  void _accept(BuildContext context) {
+  void _accept(BuildContext context) async {
+    Avatar avatar;
+    String base64 = base64String(await imageFile!.readAsBytes());
+    avatar = Avatar(0, base64, AuthService.to.user?.email);
+    _avatarDao.save(avatar);
     Navigator.pop(context);
   }
 
-  void _selectImage() async{
+  void _selectImage() async {
     final ImagePicker picker = ImagePicker();
-    print("entrou no select image");
+
     try {
       XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    print("abriu a galeria");
-      if (image != null) {
-        setState(() {
-          imageFile = image;
-        });
-      }
+
+      setState(() {
+        imageFile = image;
+      });
     } catch (e) {
-      print (e);
+      print(e);
     }
+  }
+
+  String base64String(Uint8List data) {
+    return base64Encode(data);
   }
 }

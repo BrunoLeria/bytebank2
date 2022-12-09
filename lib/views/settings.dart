@@ -1,13 +1,14 @@
 import 'package:bytebank2/components/feature_item.dart';
+import 'package:bytebank2/models/avatar.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:bytebank2/views/avatar.dart';
 import 'package:flutter/material.dart';
 
-
 class Settings extends StatefulWidget {
   final Contact contact;
+  final Avatar avatar;
 
-  Settings(this.contact, {Key? key}) : super(key: key);
+  Settings(this.contact, this.avatar, {Key? key}) : super(key: key);
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -31,14 +32,14 @@ class _SettingsState extends State<Settings> {
           children: [
             Padding(
               padding: const EdgeInsets.all(32.0),
-              child: widget.contact.image == null
+              child: widget.avatar.imagem == null
                   ? const Icon(
                       Icons.portrait,
                       color: Colors.grey,
                       size: 96.0,
                       semanticLabel: 'Profile avatar',
                     )
-                  : Image.asset('images/bytebank_logo.png'),
+                  : widget.avatar.imageFromBase64String(250, 250),
             ),
             Padding(
               padding: const EdgeInsets.all(32.0),
@@ -78,9 +79,8 @@ class _SettingsState extends State<Settings> {
                     onClick: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AvatarPage(),
-                        fullscreenDialog: true
-                      ),
+                          builder: (context) => AvatarPage(),
+                          fullscreenDialog: true),
                     ),
                   ),
                 ],

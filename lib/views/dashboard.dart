@@ -1,6 +1,8 @@
 import 'package:bytebank2/components/balance_card.dart';
 import 'package:bytebank2/components/feature_item.dart';
+import 'package:bytebank2/database/dao/avatar.dart';
 import 'package:bytebank2/database/dao/contact.dart';
+import 'package:bytebank2/models/avatar.dart';
 import 'package:bytebank2/views/contacts/list.dart';
 import 'package:bytebank2/views/deposits/form.dart';
 import 'package:bytebank2/views/settings.dart';
@@ -91,8 +93,9 @@ class Dashboard extends StatelessWidget {
   void _showSettings(BuildContext context) async {
     String? email = AuthService.to.user?.email ?? '';
     Contact contact = await ContactDao().findByEmail(email);
+    Avatar avatar = await AvatarDao().findByEmail(email);
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => Settings(contact)));
+        .push(MaterialPageRoute(builder: (context) => Settings(contact, avatar)));
   }
 
   _showDepositForm(BuildContext context) {
