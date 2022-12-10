@@ -11,6 +11,7 @@ import 'package:uuid/uuid.dart';
 import '../../api/webclients/transaction.dart';
 import '../../components/response_dialog.dart';
 import '../../models/contact.dart';
+import '../dashboard.dart';
 import 'list.dart';
 
 class TransactionForm extends StatefulWidget {
@@ -113,14 +114,24 @@ class TransactionFormState extends State<TransactionForm> {
       context: context,
       builder: (contextDialog) {
         return TransactionAuthDialog(
-          onConfirm: (password) => _save(transactionCreated, password, context),
+          onConfirm: (password) =>
+              _save(transactionCreated, password).then((value) => {
+                    if (value)
+                      {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const Dashboard(),
+                          ),
+                        )
+                      }
+                  }),
         );
       },
     );
   }
 
-  void _save(Transaction transactionCreated, String password,
-      BuildContext context) async {
+  Future<bool> _save(Transaction transactionCreated, String password) async {
+    bool? transactionResult = false;
     setState(() {
       _sending = true;
     });
@@ -131,7 +142,7 @@ class TransactionFormState extends State<TransactionForm> {
         _sending = false;
       });
       failureDialog!.showFailureSnackBar(message: "Transação não autorizada.");
-      return;
+      return result;
     }
     await _webClient.save(transactionCreated, "1000").then((transaction) {
       successDialog!.showSuccessfulSnackBar('Transação feita com sucesso!');
@@ -153,6 +164,7 @@ class TransactionFormState extends State<TransactionForm> {
     }).whenComplete(() => setState(() {
           _sending = false;
         }));
+    return transactionResult;
   }
 
   void sendToCrashlytics(e, Transaction transactionCreated) {
