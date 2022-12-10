@@ -31,6 +31,7 @@ class TransactionFormState extends State<TransactionForm> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final SuccessDialog? successDialog = const SuccessDialog();
   final FailureDialog? failureDialog = const FailureDialog();
+  bool sucess = false;
 
   @override
   Widget build(BuildContext context) {
@@ -115,22 +116,22 @@ class TransactionFormState extends State<TransactionForm> {
       builder: (contextDialog) {
         return TransactionAuthDialog(
           onConfirm: (password) =>
-              _save(transactionCreated, password).then((value) => {
-                    if (value)
-                      {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const Dashboard(),
-                          ),
-                        )
-                      }
-                  }),
+              _save(transactionCreated, password).then((value) {
+            sucess = value ?? false;
+            if (sucess) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const Dashboard(),
+                ),
+              );
+            }
+          }),
         );
       },
     );
   }
 
-  Future<bool> _save(Transaction transactionCreated, String password) async {
+  Future<bool?> _save(Transaction transactionCreated, String password) async {
     bool? transactionResult = false;
     setState(() {
       _sending = true;
@@ -144,26 +145,37 @@ class TransactionFormState extends State<TransactionForm> {
       failureDialog!.showFailureSnackBar(message: "Transação não autorizada.");
       return result;
     }
-    await _webClient.save(transactionCreated, "1000").then((transaction) {
-      successDialog!.showSuccessfulSnackBar('Transação feita com sucesso!');
-    }).catchError((e) {
-      sendToCrashlytics(e, transactionCreated);
-      failureDialog!.showFailureSnackBar(
-        message: e.toString(),
-      );
-    }, test: (e) => e is HttpException || e is CustomException).catchError((e) {
-      sendToCrashlytics(e, transactionCreated);
-      failureDialog!.showFailureSnackBar(
-        message: "Houve um problema com a conexão. Tente novamente mais tarde.",
-      );
-    }, test: (e) => e is TimeoutException).catchError((e) {
-      sendToCrashlytics(e, transactionCreated);
-      failureDialog!.showFailureSnackBar(
-        message: 'Erro desconhecido, por favor entre contato com o nosso',
-      );
-    }).whenComplete(() => setState(() {
-          _sending = false;
-        }));
+    await _webClient
+        .save(transactionCreated, "1000")
+        .then((transaction) {
+          successDialog!.showSuccessfulSnackBar('Transação feita com sucesso!');
+          transactionResult = true;
+        })
+        .catchError((e) {},
+            test: (e) => e is HttpException || e is CustomException)
+        .catchError((e) {
+          sendToCrashlytics(e, transactionCreated);
+          failureDialog!.showFailureSnackBar(
+            message:
+                "Houve um problema com a conexão. Tente novamente mais tarde.",
+          );
+        }, test: (e) => e is TimeoutException)
+        .catchError((e) {
+          sendToCrashlytics(e, transactionCreated);
+          failureDialog!.showFailureSnackBar(
+            message:
+                'Sua transação não foi concluída. Tente novamente mais tarde.',
+          );
+        }, test: (e) => e is Exception)
+        .catchError((e) {
+          sendToCrashlytics(e, transactionCreated);
+          failureDialog!.showFailureSnackBar(
+            message: 'Erro desconhecido, por favor entre contato com o nosso',
+          );
+        })
+        .whenComplete(() => setState(() {
+              _sending = false;
+            }));
     return transactionResult;
   }
 
