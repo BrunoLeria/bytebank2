@@ -4,13 +4,16 @@ import 'dart:typed_data';
 import 'package:bytebank2/components/response_dialog.dart';
 import 'package:bytebank2/database/dao/avatar.dart';
 import 'package:bytebank2/models/avatar.dart';
+import 'package:bytebank2/models/contact.dart';
 import 'package:bytebank2/services/auth.dart';
+import 'package:bytebank2/views/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AvatarPage extends StatefulWidget {
-  const AvatarPage({Key? key}) : super(key: key);
+  final Contact contact;
+  const AvatarPage(this.contact, {Key? key}) : super(key: key);
 
   @override
   State<AvatarPage> createState() => _AvatarPageState();
@@ -24,6 +27,7 @@ class _AvatarPageState extends State<AvatarPage> {
   final AvatarDao _avatarDao = AvatarDao();
   final FailureDialog? failureDialog = const FailureDialog();
   final SuccessDialog? successDialog = const SuccessDialog();
+  Avatar avatar = Avatar(0, null, null);
 
   @override
   void initState() {
@@ -162,8 +166,14 @@ class _AvatarPageState extends State<AvatarPage> {
                   backgroundColor: Colors.white.withOpacity(0.5),
                   child: IconButton(
                     onPressed: () {
-                      _accept(context)
-                          .then((value) => {if (value) Navigator.pop(context)});
+                      _accept(context).then((value) {
+                        if (value) {
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      Settings(widget.contact, avatar)));
+                        }
+                      });
                     },
                     icon: const Icon(
                       Icons.done,
@@ -197,10 +207,16 @@ class _AvatarPageState extends State<AvatarPage> {
 
   Future<bool> _accept(BuildContext context) async {
     try {
-      Avatar avatar;
+      String email = AuthService.to.user?.email ?? "";
+      Avatar avatar = await _avatarDao.findByEmail(email);
       String base64 = base64String(await imageFile!.readAsBytes());
-      avatar = Avatar(0, base64, AuthService.to.user?.email);
-      _avatarDao.save(avatar);
+      if (avatar.imagem != null) {
+        avatar.imagem = base64;
+        _avatarDao.update(avatar);
+      } else {
+        avatar = Avatar(0, base64, email);
+        _avatarDao.save(avatar);
+      }
       successDialog!.showSuccessfulSnackBar("Avatar alterado com sucesso");
       return true;
     } catch (e) {

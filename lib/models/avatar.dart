@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class Avatar {
   final int? id;
-  final String? imagem;
+  String? imagem;
   final String? email;
 
   Avatar(this.id, this.imagem, this.email);

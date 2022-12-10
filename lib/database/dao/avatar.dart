@@ -2,7 +2,6 @@ import 'package:bytebank2/database/app.dart';
 import 'package:bytebank2/models/avatar.dart';
 import 'package:sqflite/sqlite_api.dart';
 
-
 class AvatarDao {
   static const String dropTableSql = 'DROP TABLE IF EXISTS $_tableName;';
   static const String tableSql = 'CREATE TABLE IF NOT EXISTS $_tableName('
@@ -44,10 +43,14 @@ class AvatarDao {
 
   Future<Avatar> findByEmail(String email) async {
     final Database db = await getDatabase();
-    final List<Map<String, dynamic>> results =
-        await db.query('avatars', where: 'email = ?', whereArgs: [email]);
-    Avatar avatar = Avatar(results[0][_id], results[0][_imagem],
-        results[0][_email]);
+    Avatar avatar = Avatar(0, null, null);
+    try {
+      final List<Map<String, dynamic>> results =
+          await db.query('avatars', where: 'email = ?', whereArgs: [email]);
+      avatar = Avatar(results[0][_id], results[0][_imagem], results[0][_email]);
+    } catch (e) {
+      print("avatar não encontrado");
+    }
     return avatar;
   }
 

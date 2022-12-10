@@ -79,7 +79,7 @@ class _SettingsState extends State<Settings> {
                     onClick: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const AvatarPage(),
+                          builder: (context) => AvatarPage(widget.contact),
                           fullscreenDialog: true),
                     ),
                   ),
