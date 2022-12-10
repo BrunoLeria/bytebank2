@@ -1,6 +1,5 @@
 import 'package:bytebank2/components/response_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
@@ -82,7 +81,7 @@ class AuthService extends GetxController {
     await _auth.signOut();
   }
 
-  Future<bool?> authenticateUser(BuildContext context, String email) async {
+  Future<bool?> authenticateUser(String email) async {
     //initialize Local Authentication plugin.
     final LocalAuthentication localAuthentication = LocalAuthentication();
     //status of authentication.

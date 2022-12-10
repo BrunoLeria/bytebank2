@@ -105,7 +105,17 @@ class _LoginState extends State<Login> {
                       child: const Text('Login with password'),
                     ),
                     ElevatedButton(
-                      onPressed: () => loginWithBiometrics(),
+                      onPressed: () => loginWithBiometrics().then((value) => {
+                                logged = value ?? false,
+                                if (logged)
+                                  {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => const Dashboard(),
+                                      ),
+                                    )
+                                  }
+                              }),
                       child: const Text('Login with biometrics'),
                     ),
                   ],
@@ -134,11 +144,12 @@ class _LoginState extends State<Login> {
     return status;
   }
 
-  loginWithBiometrics() async {
+  Future<bool?> loginWithBiometrics() async {
     if (_emailController.text.isEmpty) {
       failureDialog!.showFailureSnackBar(message: 'Please, inform your email');
-      return;
+      return false;
     }
-    await AuthService.to.authenticateUser(context, _emailController.text);
+    bool? status = await AuthService.to.authenticateUser(_emailController.text);
+    return status;
   }
 }

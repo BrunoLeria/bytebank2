@@ -1,8 +1,11 @@
 import 'dart:math';
 
+import 'package:bytebank2/components/response_dialog.dart';
 import 'package:bytebank2/database/dao/contact.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:flutter/material.dart';
+
+import '../login.dart';
 
 class ContactForm extends StatefulWidget {
   const ContactForm({Key? key}) : super(key: key);
@@ -72,20 +75,10 @@ class _ContactFormState extends State<ContactForm> {
                   width: double.maxFinite,
                   child: ElevatedButton(
                     onPressed: () {
-                      const int id = 0;
-                      final String name = _nameController.text;
-                      final String email = _emailController.text;
-                      final String password = _passwordController.text;
-                      final int accountNumber = generateRadomAccountNumber();
-                      const double balance = 1000.0;
-                      final Contact newContact =
-                          Contact(id, name, email, accountNumber);
-                      newContact.balance = balance;
-                      newContact.password = password;
-                      _contactDao
-                          .save(newContact, password, context)
-                          .then((id) {
-                        Navigator.pop(context);
+                      save().then((value) => {
+                        if(value) {
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const Login()))
+                        }
                       });
                     },
                     child: Text(_elevatedButtonLabel),
@@ -97,6 +90,24 @@ class _ContactFormState extends State<ContactForm> {
         ),
       ),
     );
+  }
+
+  Future<bool> save() async {
+    if(_nameController.text.isEmpty || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      const FailureDialog().showFailureSnackBar(message: "Please fill all fields");
+      return false;
+    }
+    const int id = 0;
+    final String name = _nameController.text;
+    final String email = _emailController.text;
+    final String password = _passwordController.text;
+    final int accountNumber = generateRadomAccountNumber();
+    const double balance = 1000.0;
+    final Contact newContact = Contact(id, name, email, accountNumber);
+    newContact.balance = balance;
+    newContact.password = password;
+    await _contactDao.save(newContact, password, context);
+    return true;
   }
 
   int generateRadomAccountNumber() {

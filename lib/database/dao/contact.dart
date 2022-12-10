@@ -1,7 +1,6 @@
 import 'package:bytebank2/database/app.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:bytebank2/services/auth.dart';
-import 'package:bytebank2/views/login.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqlite_api.dart';
 
@@ -45,8 +44,7 @@ class ContactDao {
   Future<int> save(Contact contact, password, BuildContext context) async {
     final Database db = await getDatabase();
     AuthService.to.signUp(contact.email!, password);
-    AuthService.to.signOut().then((value) => Navigator.of(context)
-        .pushReplacement(MaterialPageRoute(builder: (context) => const Login())));
+    AuthService.to.signOut();
     return db.insert('contacts', _toMap(contact));
   }
 
