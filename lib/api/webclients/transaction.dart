@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bytebank2/database/dao/contact.dart';
+import 'package:bytebank2/models/balance.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:http/http.dart';
 
@@ -29,6 +30,7 @@ class TransactionWebClient {
         headers: {'Content-type': 'application/json', 'password': password},
         body: transactionJson);
     if (response.statusCode == 200) {
+      Balance(transaction.value).subtract(transaction.contact);
       return Transaction.fromJson(jsonDecode(response.body));
     }
     throw HttpException(_getMessage(response.statusCode));
