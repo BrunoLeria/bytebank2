@@ -41,10 +41,10 @@ class Dashboard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
+          const Align(
             alignment: Alignment.topCenter,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0),
               child: BalanceCard(),
             ),
           ),
@@ -100,13 +100,13 @@ class Dashboard extends StatelessWidget {
 
   _showDepositForm(BuildContext context) {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => DepositForm()));
+        .push(MaterialPageRoute(builder: (context) => const DepositForm()));
   }
 
   void _logout(BuildContext context) {
-    AuthService.to.signOut(context);
+    AuthService.to.signOut();
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => Login()));
+        .pushReplacement(MaterialPageRoute(builder: (context) => const Login()));
   }
 
   void updateBalance(BuildContext context) {

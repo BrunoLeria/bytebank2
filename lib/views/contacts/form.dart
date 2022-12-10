@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:bytebank2/components/response_dialog.dart';
 import 'package:bytebank2/database/dao/contact.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:flutter/material.dart';

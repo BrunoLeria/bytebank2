@@ -8,6 +8,6 @@ class CheckAuth extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AuthService.to.userIsLogged.value ? Dashboard() : Login();
+    return AuthService.to.userIsLogged.value ? const Dashboard() : const Login();
   }
 }

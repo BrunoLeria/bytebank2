@@ -1,10 +1,13 @@
 import 'package:bytebank2/services/auth.dart';
 import 'package:bytebank2/views/contacts/form.dart';
+import 'package:bytebank2/views/dashboard.dart';
 import 'package:flutter/material.dart';
 
 import '../components/response_dialog.dart';
 
 class Login extends StatefulWidget {
+  const Login({super.key});
+
   @override
   State<Login> createState() => _LoginState();
 }
@@ -20,8 +23,10 @@ class _LoginState extends State<Login> {
 
   final double _fontSizeForLabels = 24.0;
 
+  final FailureDialog? failureDialog = const FailureDialog();
 
   bool _informedEmail = false;
+  bool logged = false;
 
   @override
   Widget build(BuildContext context) {
@@ -85,12 +90,22 @@ class _LoginState extends State<Login> {
                     ),
                     ElevatedButton(
                       onPressed: () => _informedEmail
-                          ? login(context)
-                          : showPasswordField(context),
+                          ? login().then((value) => {
+                                logged = value ?? false,
+                                if (logged)
+                                  {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => const Dashboard(),
+                                      ),
+                                    )
+                                  }
+                              })
+                          : showPasswordField(),
                       child: const Text('Login with password'),
                     ),
                     ElevatedButton(
-                      onPressed: () => loginWithBiometrics(context),
+                      onPressed: () => loginWithBiometrics(),
                       child: const Text('Login with biometrics'),
                     ),
                   ],
@@ -103,9 +118,9 @@ class _LoginState extends State<Login> {
     );
   }
 
-  showPasswordField(BuildContext context) {
+  showPasswordField() {
     if (_emailController.text.isEmpty) {
-      FailureDialog(message: 'Please, inform your email');
+      failureDialog!.showFailureSnackBar(message: 'Please, inform your email');
       return;
     }
     setState(() {
@@ -113,14 +128,15 @@ class _LoginState extends State<Login> {
     });
   }
 
-  login(BuildContext context) {
-    AuthService.to
-        .signIn(_emailController.text, _passwordController.text, context);
+  Future<bool?> login() async {
+    bool? status = await AuthService.to
+        .signIn(_emailController.text, _passwordController.text);
+    return status;
   }
 
-  loginWithBiometrics(BuildContext context) async {
+  loginWithBiometrics() async {
     if (_emailController.text.isEmpty) {
-      FailureDialog(message: 'Please, inform your email');
+      failureDialog!.showFailureSnackBar(message: 'Please, inform your email');
       return;
     }
     await AuthService.to.authenticateUser(context, _emailController.text);

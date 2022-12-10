@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:bytebank2/services/globals.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:local_auth/local_auth.dart';
 import 'firebase_options.dart';
 import 'package:bytebank2/components/check_auth.dart';
 import 'package:bytebank2/models/balance.dart';
@@ -40,7 +40,8 @@ class ByteBankApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Banking App',
+      scaffoldMessengerKey: snackbarKey,
       theme: ThemeData(
         primaryColor: Colors.green[900],
         colorScheme: ColorScheme.fromSwatch().copyWith(
@@ -57,7 +58,20 @@ class ByteBankApp extends StatelessWidget {
           ),
         ),
       ),
-      home: CheckAuth(),
+      home: FutureBuilder(
+          future: AuthService.to.isUserSignedIn(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return const CheckAuth();
+            } else {
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+          }
+        ),
     );
   }
 }

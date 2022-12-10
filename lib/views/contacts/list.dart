@@ -2,7 +2,6 @@ import 'package:bytebank2/database/dao/avatar.dart';
 import 'package:bytebank2/database/dao/contact.dart';
 import 'package:bytebank2/models/avatar.dart';
 import 'package:bytebank2/models/contact.dart';
-import 'package:bytebank2/views/contacts/form.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/centered_message.dart';
@@ -72,8 +71,6 @@ class _ContactItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AvatarDao avatarDao = AvatarDao();
-
     return FutureBuilder(
       future: getAvatar(),
       builder: (context, snapshot) {

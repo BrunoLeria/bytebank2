@@ -19,7 +19,6 @@ class Balance extends ChangeNotifier {
     String? email = AuthService.to.user?.email ?? '';
 
     Contact currentUser = await ContactDao().findByEmail(email);
-    print('currentUser: $currentUser');
     currentUser.balance = currentUser.balance! + valor;
     await ContactDao().update(currentUser);
     value += valor;

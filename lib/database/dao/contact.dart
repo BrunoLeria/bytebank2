@@ -1,6 +1,7 @@
 import 'package:bytebank2/database/app.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:bytebank2/services/auth.dart';
+import 'package:bytebank2/views/login.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqlite_api.dart';
 
@@ -22,7 +23,6 @@ class ContactDao {
   static const String _accountNumber = 'account_number';
 
   Map<String, dynamic> _toMap(Contact contact) {
-    print(contact);
     final Map<String, dynamic> contactMap = {};
     contactMap[_name] = contact.name;
     contactMap[_email] = contact.email;
@@ -44,7 +44,9 @@ class ContactDao {
 
   Future<int> save(Contact contact, password, BuildContext context) async {
     final Database db = await getDatabase();
-    AuthService.to.signUp(contact.email!, password, context);
+    AuthService.to.signUp(contact.email!, password);
+    AuthService.to.signOut().then((value) => Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => const Login())));
     return db.insert('contacts', _toMap(contact));
   }
 

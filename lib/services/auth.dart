@@ -1,6 +1,4 @@
 import 'package:bytebank2/components/response_dialog.dart';
-import 'package:bytebank2/views/dashboard.dart';
-import 'package:bytebank2/views/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +10,8 @@ import '../models/contact.dart';
 
 class AuthService extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final SuccessDialog? successDialog = new SuccessDialog();
+  final SuccessDialog? successDialog = const SuccessDialog();
+  final FailureDialog? failureDialog = const FailureDialog();
 
   Rx<User?>? _firebaseUser;
   RxBool userIsLogged = false.obs;
@@ -25,10 +24,8 @@ class AuthService extends GetxController {
 
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null) {
-        print('User is currently signed out!');
         userIsLogged.value = false;
       } else {
-        print('User is signed in!');
         userIsLogged.value = true;
       }
     });
@@ -37,55 +34,52 @@ class AuthService extends GetxController {
   User? get user => _firebaseUser!.value;
   static AuthService get to => Get.find<AuthService>();
 
+  Future<void> isUserSignedIn() async {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        userIsLogged.value = false;
+      } else {
+        userIsLogged.value = true;
+      }
+    });
+  }
+
   Future<bool?> signIn(
-      String email, String password, BuildContext context) async {
+      String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
-      if (userIsLogged.value) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const Dashboard()));
-      }
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        FailureDialog(
-            message: 'No user found for that email.');
+        failureDialog!.showFailureSnackBar(message: 'No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        FailureDialog(
-            message: 'Wrong password provided for that user.');
+        failureDialog!.showFailureSnackBar(message: 'Wrong password provided for that user.');
       }
       return false;
     } catch (e) {
-      FailureDialog( message: e.toString());
+      failureDialog!.showFailureSnackBar(message: e.toString());
       return false;
     }
   }
 
-  signUp(String email, String password, BuildContext context) async {
+  signUp(String email, String password) async {
     try {
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      signOut(context);
-      successDialog!.showSuccessfulSnackBar(context, "Welcome to Bytebank!");
+      successDialog!.showSuccessfulSnackBar("Welcome to Bytebank!");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        FailureDialog(
-            message: 'The password provided is too weak.');
+        failureDialog!.showFailureSnackBar(message: 'The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        FailureDialog(
-            message: 'The account already exists for that email.');
+        failureDialog!.showFailureSnackBar(message: 'The account already exists for that email.');
       }
     } catch (e) {
-      print(e.toString());
+      failureDialog!.showFailureSnackBar(message: e.toString());
     }
   }
 
-  signOut(BuildContext context) async {
+  signOut() async {
     await _auth.signOut();
-    if (!userIsLogged.value) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => Login()));
-    }
   }
 
   Future<bool?> authenticateUser(BuildContext context, String email) async {
@@ -109,11 +103,10 @@ class AuthService extends GetxController {
         if (isAuthenticated) {
           Contact currentUser = await ContactDao().findByEmail(email);
           String password = currentUser.password!;
-          isAuthenticated = await signIn(email, password, context);
+          isAuthenticated = await signIn(email, password);
         }
-      } on PlatformException catch (e) {
-        FailureDialog(
-            message: 'Failed to authenticate. Try again later.');
+      } on PlatformException {
+        failureDialog!.showFailureSnackBar(message: 'Failed to authenticate. Try again later.');
       }
     }
     return isAuthenticated;

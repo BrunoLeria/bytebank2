@@ -1,3 +1,4 @@
+import 'package:bytebank2/services/globals.dart';
 import 'package:flutter/material.dart';
 
 class ResponseDialog extends StatelessWidget {
@@ -86,14 +87,13 @@ class SuccessDialog extends StatelessWidget {
     );
   }
 
-  void showSuccessfulSnackBar(BuildContext context, String message) {
-    Navigator.pop(context);
+  void showSuccessfulSnackBar(String message) {
     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: Colors.green[900],
       duration: const Duration(seconds: 2),
     );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    snackbarKey.currentState?.showSnackBar(snackBar);
   }
 }
 
@@ -119,7 +119,7 @@ class FailureDialog extends StatelessWidget {
     );
   }
 
-  void showFailureSnackBar(BuildContext context,
+  void showFailureSnackBar(
       {String message =
           'Erro desconhecido, por favor entre contato com o nosso'}) {
     final snackBar = SnackBar(
@@ -127,6 +127,6 @@ class FailureDialog extends StatelessWidget {
       backgroundColor: Colors.red[900],
       duration: const Duration(seconds: 2),
     );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    snackbarKey.currentState?.showSnackBar(snackBar);
   }
 }

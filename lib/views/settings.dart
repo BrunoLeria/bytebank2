@@ -8,7 +8,7 @@ class Settings extends StatefulWidget {
   final Contact contact;
   final Avatar avatar;
 
-  Settings(this.contact, this.avatar, {Key? key}) : super(key: key);
+  const Settings(this.contact, this.avatar, {Key? key}) : super(key: key);
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -79,7 +79,7 @@ class _SettingsState extends State<Settings> {
                     onClick: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => AvatarPage(),
+                          builder: (context) => const AvatarPage(),
                           fullscreenDialog: true),
                     ),
                   ),

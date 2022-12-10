@@ -5,7 +5,7 @@ class FeatureItem extends StatelessWidget {
   final IconData? icon;
   final Function onClick;
 
-  const FeatureItem(this.name, this.icon, {required this.onClick});
+  const FeatureItem(this.name, this.icon, {super.key, required this.onClick});
 
   @override
   Widget build(BuildContext context) {

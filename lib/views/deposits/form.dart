@@ -4,10 +4,18 @@ import 'package:provider/provider.dart';
 
 import '../../components/loading.dart';
 
-class DepositForm extends StatelessWidget {
+class DepositForm extends StatefulWidget {
+
+  const DepositForm({Key? key}) : super(key: key);
+
+  @override
+  State<DepositForm> createState() => _DepositFormState();
+}
+
+class _DepositFormState extends State<DepositForm> {
   TextEditingController valueController = TextEditingController();
+
   bool sending = false;
-  DepositForm({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

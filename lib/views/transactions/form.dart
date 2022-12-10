@@ -19,15 +19,17 @@ class TransactionForm extends StatefulWidget {
   const TransactionForm(this.contact, {Key? key}) : super(key: key);
 
   @override
-  _TransactionFormState createState() => _TransactionFormState();
+  TransactionFormState createState() => TransactionFormState();
 }
 
-class _TransactionFormState extends State<TransactionForm> {
+class TransactionFormState extends State<TransactionForm> {
   final TextEditingController _valueController = TextEditingController();
   final TransactionWebClient _webClient = TransactionWebClient();
   final String transactionID = const Uuid().v4();
   bool _sending = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final SuccessDialog? successDialog = const SuccessDialog();
+  final FailureDialog? failureDialog = const FailureDialog();
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +103,7 @@ class _TransactionFormState extends State<TransactionForm> {
   void _initiateTransaction(BuildContext context) {
     final double? value = double.tryParse(_valueController.text);
     if (value == null) {
-      const FailureDialog(
+      failureDialog!.showFailureSnackBar(
         message: "Informe um valor válido para a transação.",
       );
     }
@@ -123,43 +125,43 @@ class _TransactionFormState extends State<TransactionForm> {
       _sending = true;
     });
     String email = FirebaseAuth.instance.currentUser?.email ?? "";
-    bool? result = await AuthService.to.signIn(email, password, context);
+    bool? result = await AuthService.to.signIn(email, password);
     if (!result!) {
       setState(() {
         _sending = false;
       });
-      const FailureDialog(message: "Transação não autorizada.");
+      failureDialog!.showFailureSnackBar(message: "Transação não autorizada.");
       return;
     }
-    await _webClient
-        .save(transactionCreated, "1000", context)
-        .then((transaction) {
-      const SuccessDialog()
-          .showSuccessfulSnackBar(context, 'Transação feita com sucesso!');
+    await _webClient.save(transactionCreated, "1000").then((transaction) {
+      successDialog!.showSuccessfulSnackBar('Transação feita com sucesso!');
     }).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
-      FailureDialog(
+      failureDialog!.showFailureSnackBar(
         message: e.toString(),
       );
     }, test: (e) => e is HttpException || e is CustomException).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
-      const FailureDialog(
+      failureDialog!.showFailureSnackBar(
         message: "Houve um problema com a conexão. Tente novamente mais tarde.",
       );
     }, test: (e) => e is TimeoutException).catchError((e) {
       sendToCrashlytics(e, transactionCreated);
-      const FailureDialog(
+      failureDialog!.showFailureSnackBar(
         message: 'Erro desconhecido, por favor entre contato com o nosso',
       );
     }).whenComplete(() => setState(() {
-              _sending = false;
-            }));
+          _sending = false;
+        }));
   }
 
   void sendToCrashlytics(e, Transaction transactionCreated) {
     if (FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled) {
-      FirebaseCrashlytics.instance.setCustomKey("Exception", e.toString());
-      FirebaseCrashlytics.instance.setCustomKey("http_code", e.StatusCode);
+      FirebaseCrashlytics.instance
+          .setCustomKey("Exception", e.runtimeType.toString());
+      if (e.runtimeType.toString() == "HttpException") {
+        FirebaseCrashlytics.instance.setCustomKey("http_code", e.message);
+      }
       FirebaseCrashlytics.instance
           .setCustomKey("http_body", transactionCreated.toString());
       FirebaseCrashlytics.instance.recordError(e.message, null);

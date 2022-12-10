@@ -1,7 +1,7 @@
-
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:bytebank2/components/response_dialog.dart';
 import 'package:bytebank2/database/dao/avatar.dart';
 import 'package:bytebank2/models/avatar.dart';
 import 'package:bytebank2/services/auth.dart';
@@ -22,6 +22,8 @@ class _AvatarPageState extends State<AvatarPage> {
   XFile? imageFile;
   Size? size;
   final AvatarDao _avatarDao = AvatarDao();
+  final FailureDialog? failureDialog = const FailureDialog();
+  final SuccessDialog? successDialog = const SuccessDialog();
 
   @override
   void initState() {
@@ -34,13 +36,13 @@ class _AvatarPageState extends State<AvatarPage> {
       cameras = await availableCameras();
       _startCamera();
     } catch (e) {
-      print(e);
+      failureDialog!.showFailureSnackBar(message: e.toString());
     }
   }
 
   void _startCamera() {
     if (cameras.isEmpty) {
-      print("Camêra nào foi encontrada");
+      failureDialog!.showFailureSnackBar(message: "Camêra não foi encontrada");
       return;
     }
     _previewCamera(cameras.first);
@@ -88,7 +90,7 @@ class _AvatarPageState extends State<AvatarPage> {
     try {
       await controller!.initialize();
     } catch (e) {
-      print(e);
+      failureDialog!.showFailureSnackBar(message: e.toString());
     }
     if (!mounted) {
       return;
@@ -160,7 +162,8 @@ class _AvatarPageState extends State<AvatarPage> {
                   backgroundColor: Colors.white.withOpacity(0.5),
                   child: IconButton(
                     onPressed: () {
-                      _accept(context);
+                      _accept(context)
+                          .then((value) => {if (value) Navigator.pop(context)});
                     },
                     icon: const Icon(
                       Icons.done,
@@ -188,16 +191,24 @@ class _AvatarPageState extends State<AvatarPage> {
         });
       }
     } on CameraException catch (e) {
-      print(e);
+      failureDialog!.showFailureSnackBar(message: e.toString());
     }
   }
 
-  void _accept(BuildContext context) async {
-    Avatar avatar;
-    String base64 = base64String(await imageFile!.readAsBytes());
-    avatar = Avatar(0, base64, AuthService.to.user?.email);
-    _avatarDao.save(avatar);
-    Navigator.pop(context);
+  Future<bool> _accept(BuildContext context) async {
+    try {
+      Avatar avatar;
+      String base64 = base64String(await imageFile!.readAsBytes());
+      avatar = Avatar(0, base64, AuthService.to.user?.email);
+      _avatarDao.save(avatar);
+      successDialog!.showSuccessfulSnackBar("Avatar alterado com sucesso");
+      return true;
+    } catch (e) {
+      String exception = e.toString();
+      failureDialog!.showFailureSnackBar(
+          message: "Erro ao gravar alteração do avatar: $exception");
+      return false;
+    }
   }
 
   void _selectImage() async {
@@ -210,7 +221,7 @@ class _AvatarPageState extends State<AvatarPage> {
         imageFile = image;
       });
     } catch (e) {
-      print(e);
+      failureDialog!.showFailureSnackBar(message: e.toString());
     }
   }
 

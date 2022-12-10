@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:bytebank2/models/balance.dart';
+import 'package:bytebank2/database/dao/contact.dart';
+import 'package:bytebank2/models/contact.dart';
 import 'package:http/http.dart';
-import 'package:provider/provider.dart';
 
 import '../../views/transactions/list.dart';
 import '../webclient.dart';
@@ -16,10 +16,11 @@ class TransactionWebClient {
         .toList();
   }
 
-  Future<Transaction> save(
-      Transaction transaction, String password, context) async {
-    if (transaction.value >
-        Provider.of<Balance>(context, listen: false).value) {
+  Future<Transaction> save(Transaction transaction, String password) async {
+    ContactDao dao = ContactDao();
+    Contact contact = await dao.findByEmail(transaction.contact.email!);
+    double balance = contact.balance!;
+    if (transaction.value > balance) {
       throw CustomException("Saldo insufisiente");
     }
     final String transactionJson = jsonEncode(transaction.toJson());
@@ -28,8 +29,6 @@ class TransactionWebClient {
         headers: {'Content-type': 'application/json', 'password': password},
         body: transactionJson);
     if (response.statusCode == 200) {
-      Provider.of<Balance>(context, listen: false)
-          .subtract(transaction.contact, transaction.value);
       return Transaction.fromJson(jsonDecode(response.body));
     }
     throw HttpException(_getMessage(response.statusCode));
