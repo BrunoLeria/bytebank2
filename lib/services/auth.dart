@@ -101,6 +101,9 @@ class AuthService extends GetxController {
                 biometricOnly: true, useErrorDialogs: true, stickyAuth: true));
         if (isAuthenticated) {
           Contact currentUser = await ContactDao().findByEmail(email);
+          if(currentUser.email == null){
+            return false;
+          }
           String password = currentUser.password!;
           isAuthenticated = await signIn(email, password);
         }

@@ -1,3 +1,4 @@
+import 'package:bytebank2/components/response_dialog.dart';
 import 'package:bytebank2/database/app.dart';
 import 'package:bytebank2/models/contact.dart';
 import 'package:bytebank2/services/auth.dart';
@@ -64,13 +65,18 @@ class ContactDao {
 
   Future<Contact> findByEmail(String email) async {
     final Database db = await getDatabase();
-    final List<Map<String, dynamic>> results =
-        await db.query('contacts', where: 'email = ?', whereArgs: [email]);
-    Contact contact = Contact(results[0][_id], results[0][_name],
-        results[0][_email], results[0][_accountNumber]);
-    contact.balance = results[0][_balance];
-    contact.password = results[0][_password];
-    return contact;
+    Contact contact = Contact(0, '', '', 0);
+    try {
+        final List<Map<String, dynamic>> results =
+          await db.query('contacts', where: 'email = ?', whereArgs: [email]);
+       Contact(results[0][_id], results[0][_name],
+          results[0][_email], results[0][_accountNumber]);
+      contact.balance = results[0][_balance];
+      contact.password = results[0][_password];
+    } catch (e) {
+      FailureDialog().showFailureSnackBar(message: 'Conta não encontrada');
+    }
+      return contact;
   }
 
   Future<Contact> findByAccountNumber(int accountNumber) async {
